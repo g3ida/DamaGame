@@ -11,7 +11,7 @@ public :
     void clear();
     void set(Piece p, int i);
     Piece at(int i); //Retourne le type de la piece
-    void draw();
+    void draw(float y, float x);
 
     std::vector<short> whiteNormalMouvement(short x);
     std::vector<short> blackNormalMouvement(short x);

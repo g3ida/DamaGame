@@ -30,7 +30,7 @@ Game::draw()
 	glPushMatrix();
     glLineWidth(2);
 
-    damier.draw();
+    damier.draw(0, 0);
 
     glPopMatrix();
 

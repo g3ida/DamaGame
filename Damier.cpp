@@ -153,27 +153,33 @@ Damier::blackNormalMouvement(short x)
 
 
 void
-Damier::draw()
+Damier::draw(float y, float x)
 {
-    int x = 0, y = 0;
+    //params
+    float size = 1.5f;
+    int numSamples = 20;
+
     glPushMatrix();
+    glColor3ub(79,70,49);
+    drawRectangleFilled(x, y, size*1.02, size*1.02);
     glColor3ub(255,255,255);
-    drawRectangleFilled(x, y, 1, 1);
+    drawRectangleFilled(x, y, size, size);
 
     glColor3ub(162,145,107);
-    float ox = x - 0.5f;
-    float oy = y - 0.5f;
+    float ox = x - size*0.5f;
+    float oy = y - size*0.5f;
+    float dx = size/10.f;
     for(int i = 0; i<10; i++)
     {
         for(int j = 0; j<10; j++)
         {
             if((i+j)%2 == 0)
-                drawRectangleFilled(ox+i*0.1f, oy+j*0.1f, 0.1f, 0.1f, false);
+                drawRectangleFilled(ox+i*dx, oy+j*dx, dx, dx, false);
         }
     }
-
-    ox += 0.05f;
-    oy += 0.05f;
+    //Afficher les pieces
+    ox += size*0.05f;
+    oy += size*0.05f;
     for(int i = 0; i<10; i++)
     {
         for(int j = 0; j<10; j++)
@@ -184,23 +190,23 @@ Damier::draw()
                 {
                     case WHITE:
                         glColor3ub(255,255,255);
-                        drawCircleFilled(ox+j*0.1f,oy+i*0.1f, 0.04f, 15);
+                        drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
                         break;
                     case BLACK:
                         glColor3ub(0,0,0);
-                        drawCircleFilled( ox+j*0.1f, oy+i*0.1f, 0.04f, 15);
+                        drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
                         break;
                     case WHITE_KING :
                         glColor3ub(255,255,255);
-                        drawCircleFilled(ox+j*0.1f,oy+i*0.1f, 0.04f, 15);
+                        drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
                         glColor3ub(0, 0, 0);
-                        drawKing(ox+j*0.1f, oy-0.01+i*0.1f, 0.03f);
+                        drawKing(ox+j*dx, oy-size*0.01+i*dx, size*0.03f);
                         break;
                     case BLACK_KING :
                         glColor3ub(0,0,0);
-                        drawCircleFilled( ox+j*0.1f, oy+i*0.1f, 0.04f, 15);
+                        drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
                         glColor3ub(255, 255, 255);
-                        drawKing(ox+j*0.1f, oy-0.01+i*0.1f, 0.03f);
+                        drawKing(ox+j*dx, oy-0.01*size+i*dx, size*0.03f);
                         break;
                     case EMPTY :
                         break;
