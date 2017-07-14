@@ -44,7 +44,20 @@ Damier::at(int i)
 
     return tab[i];
 }
-
+bool Damier:: isEmpty(short x)
+{
+    if(at(x)==EMPTY)
+        return (true);
+    else
+        return (false);
+}
+bool Damier:: isWhite(short x)
+{
+    if(at(x)==WHITE || at(x)==WHITE_KING)
+        return (true);
+    else
+        return (false);
+}
 short decrementRight(short x)
 {
    if((x/5)==0)
@@ -150,8 +163,357 @@ Damier::blackNormalMouvement(short x)
         v.push_back(b);
     return(v);
 }
+vector<short> Damier::kingMouvement(short x)
+{
+    vector<short> v;
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
 
+    while(a != (-1) && (this->isEmpty(a)))
+    {
+        v.push_back(a);
+        a= incrementLeft(a);
+    }
+    while(b != (-1) && (this->isEmpty(b)))
+    {
+        v.push_back(b);
+        b= incrementRight(b);
+    }
+    while(c != (-1) && (this->isEmpty(c)))
+    {
+        v.push_back(c);
+        c= decrementLeft(c);
+    }
+    while(d != (-1) && (this->isEmpty(d)))
+    {
+        v.push_back(d);
+        d= decrementRight(d);
+    }
+    return(v);
+}
 
+short Damier::eatBlackDownLeft(short x)
+{
+    short a=decrementLeft(x);
+    if(a != (-1))
+    {
+        short b=decrementLeft(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((!(this->isWhite(a))) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatBlackDownRight(short x)
+{
+    short a=decrementRight(x);
+    if(a != (-1))
+    {
+        short b= decrementRight(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((!(this->isWhite(a))) && this->isEmpty(b))
+                return(b);
+        }
+    }
+
+    return(0);
+}
+short Damier::eatWhiteDownRight(short x)
+{
+    short a=decrementRight(x);
+    if(a != (-1))
+    {
+        short b= decrementRight(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((this->isWhite(a)) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatWhiteDownLeft(short x)
+{
+    short a=decrementLeft(x);
+    if(a != (-1))
+    {
+        short b= decrementLeft(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((this->isWhite(a)) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatWhiteUpLeft(short x)
+{
+    short a=incrementLeft(x);
+    if(a != (-1))
+    {
+        short b= incrementLeft(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((this->isWhite(a)) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatWhiteUpRight(short x)
+{
+    short a=incrementRight(x);
+    if(a != (-1))
+    {
+        short b= incrementRight(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((this->isWhite(a)) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatBlackUpLeft(short x)
+{
+    short a=incrementLeft(x);
+    if(a != (-1))
+    {
+        short b= incrementLeft(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((!(this->isWhite(a))) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+short Damier::eatBlackUpRight(short x)
+{
+    short a=incrementRight(x);
+    if(a != (-1))
+    {
+        short b= incrementRight(a);
+        if ((!(this->isEmpty(a))) && b!=(-1))
+        {
+            if((!(this->isWhite(a))) && this->isEmpty(b))
+                return(b);
+        }
+    }
+    return(0);
+}
+
+vector<short> Damier::whiteNormalEat(short x)
+{
+    vector<short> v;
+    short a=this->eatBlackDownRight(x);
+    short b=this->eatBlackDownLeft(x);
+    short c=this->eatBlackUpRight(x);
+    short d=this->eatBlackUpLeft(x);
+    if(a)
+        v.push_back(a);
+    if(b)
+        v.push_back(b);
+    if(c)
+        v.push_back(c);
+    if(d)
+        v.push_back(d);
+
+}
+vector<short> Damier::blackNormalEat(short x)
+{
+    vector<short> v;
+    short a=this->eatWhiteUpRight(x);
+    short b=this->eatWhiteUpLeft(x);
+    short c=this->eatWhiteDownRight(x);
+    short d=this->eatWhiteDownLeft(x);
+    if(a)
+        v.push_back(a);
+    if(b)
+        v.push_back(b);
+    if(c)
+        v.push_back(c);
+    if(d)
+        v.push_back(d);
+}
+vector<short> Damier::whiteKingEat(short x)
+{
+    vector<short> v;
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
+    short a1,b1,c1,d1;
+    while(a!=(-1) && this->isEmpty(a))
+    {
+        a1=a;
+        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
+    }
+
+    if(a!=(-1))
+    {
+        short e=this->eatBlackUpLeft(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementLeft(e);
+            }
+        }
+    }
+    while(b!=(-1) && this->isEmpty(b))
+    {
+        b1=b;
+        b=incrementRight(a);
+    }
+    if(b!=(-1))
+    {
+        short e=this->eatBlackUpRight(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementRight(e);
+            }
+        }
+    }
+    while(c!=(-1) && this->isEmpty(c))
+    {
+        c1=c;
+        c=decrementLeft(c);
+    }
+    if(c!=(-1))
+    {
+        short e=this->eatBlackDownLeft(c1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementLeft(e);
+            }
+        }
+    }
+    while(d!=(-1) && this->isEmpty(d))
+    {
+        d1=d;
+        d=decrementRight(d);
+    }
+    if(d!=(-1))
+    {
+        short e=this->eatBlackDownRight(d1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementRight(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementRight(e);
+            }
+        }
+    }
+}
+
+vector<short> Damier::blackKingEat(short x)
+{
+    vector<short> v;
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
+    short a1,b1,c1,d1;
+    while(a!=(-1) && this->isEmpty(a))
+    {
+        a1=a;
+        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
+    }
+
+    if(a!=(-1))
+    {
+        short e=this->eatWhiteUpLeft(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementLeft(e);
+            }
+        }
+    }
+    while(b!=(-1) && this->isEmpty(b))
+    {
+        b1=b;
+        b=incrementRight(a);
+    }
+    if(b!=(-1))
+    {
+        short e=this->eatWhiteUpRight(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementRight(e);
+            }
+        }
+    }
+    while(c!=(-1) && this->isEmpty(c))
+    {
+        c1=c;
+        c=decrementLeft(c);
+    }
+    if(c!=(-1))
+    {
+        short e=this->eatWhiteDownLeft(c1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementLeft(e);
+            }
+        }
+    }
+    while(d!=(-1) && this->isEmpty(d))
+    {
+        d1=d;
+        d=decrementRight(d);
+    }
+    if(d!=(-1))
+    {
+        short e=this->eatWhiteDownRight(d1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementRight(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementRight(e);
+            }
+        }
+    }
+}
 void
 Damier::draw(float y, float x)
 {
