@@ -134,7 +134,7 @@ static short incrementRight(short x)
    }
    return(-1);
 }
-std::vector<short>&&
+std::vector<short>
 Damier::whiteNormalMouvement(short x)
 {
     std::vector<short> v;
@@ -144,9 +144,9 @@ Damier::whiteNormalMouvement(short x)
         v.push_back(a);
     if( (b!=(-1)) && tab[a] == EMPTY )
         v.push_back(b);
-    return std::move(v);
+    return v;
 }
-std::vector<short>&&
+std::vector<short>
 Damier::blackNormalMouvement(short x)
 {
     std::vector<short> v;
@@ -156,9 +156,9 @@ Damier::blackNormalMouvement(short x)
         v.push_back(a);
     if( (b!=(-1)) && tab[a] == EMPTY )
         v.push_back(b);
-    return std::move(v);
+    return v;
 }
-std::vector<short>&&
+std::vector<short>
 Damier::kingMouvement(short x)
 {
     std::vector<short> v;
@@ -187,7 +187,7 @@ Damier::kingMouvement(short x)
         v.push_back(d);
         d= decrementRight(d);
     }
-    return std::move(v);
+    return v;
 }
 
 short Damier::eatBlackDownLeft(short x)
@@ -304,7 +304,7 @@ short Damier::eatBlackUpRight(short x)
     return -1;
 }
 
-std::vector<short>&&
+std::vector<short>
 Damier::whiteNormalEat(short x)
 {
     std::vector<short> v;
@@ -321,9 +321,9 @@ Damier::whiteNormalEat(short x)
     if(d)
         v.push_back(d);
 
-    return std::move(v);
+    return v;
 }
-std::vector<short>&& Damier::blackNormalEat(short x)
+std::vector<short> Damier::blackNormalEat(short x)
 {
     std::vector<short> v;
     short a=this->eatWhiteUpRight(x);
@@ -338,9 +338,9 @@ std::vector<short>&& Damier::blackNormalEat(short x)
         v.push_back(c);
     if(d)
         v.push_back(d);
-    return std::move(v);
+    return v;
 }
-std::vector<short>&&
+std::vector<short>
 Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
@@ -426,10 +426,10 @@ Damier::whiteKingEat(short x)
             }
         }
     }
-    return std::move(v);
+    return v;
 }
 
-std::vector<short>&&
+std::vector<short>
 Damier::blackKingEat(short x)
 {
     std::vector<short> v;
@@ -515,7 +515,7 @@ Damier::blackKingEat(short x)
             }
         }
     }
-    return std::move(v);
+    return v;
 }
 void
 Damier::draw(float x, float y, float size)

@@ -14,14 +14,14 @@ public :
     void draw(float y, float x, float size);
     bool isEmpty(short x);
     bool isWhite(short x);
-    std::vector<short>&& whiteNormalMouvement(short x);
-    std::vector<short>&& blackNormalMouvement(short x);
-    std::vector<short>&& kingMouvement(short x);
+    std::vector<short> whiteNormalMouvement(short x);
+    std::vector<short> blackNormalMouvement(short x);
+    std::vector<short> kingMouvement(short x);
 
-    std::vector<short>&& whiteNormalEat(short x);
-    std::vector<short>&& blackNormalEat(short x);
-    std::vector<short>&& whiteKingEat(short x);
-    std::vector<short>&& blackKingEat (short x);
+    std::vector<short> whiteNormalEat(short x);
+    std::vector<short> blackNormalEat(short x);
+    std::vector<short> whiteKingEat(short x);
+    std::vector<short> blackKingEat (short x);
 
 
 
