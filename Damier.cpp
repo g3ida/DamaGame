@@ -96,7 +96,7 @@ static short decrementLeft(short x)
 }
 static short incrementLeft(short x)
 {
-   if((x/5)==9)
+   if(x >= 45)
         return(-1);
    else
    {
@@ -537,7 +537,7 @@ Damier::draw(float x, float y, float size)
     {
         for(int j = 0; j<10; j++)
         {
-            if((i+j)%2 == 0)
+            if((i+j)%2 == 1)
                 drawRectangleFilled(ox+i*dx, oy+j*dx, dx, dx, false);
         }
     }
@@ -548,7 +548,7 @@ Damier::draw(float x, float y, float size)
     {
         for(int j = 0; j<10; j++)
         {
-            if((i+j)%2 == 0)
+            if((i+j)%2 == 1)
             {
                 switch(tab[(i*10 + j)/2])
                 {
@@ -578,6 +578,7 @@ Damier::draw(float x, float y, float size)
             }
         }
     }
-
     glPopMatrix();
+    //for(int i=0; i<50; i++)
+        //LOG(i, " inc left -> ", incrementLeft(i), "\n");
 }

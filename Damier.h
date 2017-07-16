@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "Log.h"
 
 class Damier
 {
@@ -14,6 +15,7 @@ public :
     void draw(float y, float x, float size);
     bool isEmpty(short x);
     bool isWhite(short x);
+
     std::vector<short> whiteNormalMouvement(short x);
     std::vector<short> blackNormalMouvement(short x);
     std::vector<short> kingMouvement(short x);

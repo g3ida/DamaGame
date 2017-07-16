@@ -67,7 +67,7 @@ void
 Game::update()
 {
     //LOG("update\n");
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 
 void
@@ -113,14 +113,14 @@ Game::onMouse(int button, int state, int x, int y)
             int k = ky * 10 + kx;
             if(ky % 2 == 0)
             {
-                if(k % 2 == 0)
+                if(k % 2 == 1)
                 {
                     LOG(k/2, "\n");
                 }
             }
             else
             {
-                if(k % 2 == 1)
+                if(k % 2 == 0)
                 {
                     LOG(k/2, "\n");
                 }
