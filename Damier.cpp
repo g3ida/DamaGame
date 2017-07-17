@@ -2,6 +2,7 @@
 #include <GL/glut.h>
 #include "Shapes.h"
 #include "Log.h"
+#include "Player.h"
 
 Damier::Damier()
 {
@@ -135,7 +136,7 @@ static short incrementRight(short x)
    return(-1);
 }
 std::vector<short>
-Damier::whiteNormalMouvement(short x)
+Damier::blackManMove(short x)
 {
     std::vector<short> v;
     short a=decrementLeft(x);
@@ -147,7 +148,7 @@ Damier::whiteNormalMouvement(short x)
     return v;
 }
 std::vector<short>
-Damier::blackNormalMouvement(short x)
+Damier::whiteManMove(short x)
 {
     std::vector<short> v;
     short a=incrementLeft(x);
@@ -159,7 +160,7 @@ Damier::blackNormalMouvement(short x)
     return v;
 }
 std::vector<short>
-Damier::kingMouvement(short x)
+Damier::kingMove(short x)
 {
     std::vector<short> v;
     short a=incrementLeft(x);
@@ -305,38 +306,38 @@ short Damier::eatBlackUpRight(short x)
 }
 
 std::vector<short>
-Damier::whiteNormalEat(short x)
+Damier::whiteManEat(short x)
 {
     std::vector<short> v;
     short a=this->eatBlackDownRight(x);
     short b=this->eatBlackDownLeft(x);
     short c=this->eatBlackUpRight(x);
     short d=this->eatBlackUpLeft(x);
-    if(a)
+    if(a != -1)
         v.push_back(a);
-    if(b)
+    if(b != -1)
         v.push_back(b);
-    if(c)
+    if(c != -1)
         v.push_back(c);
-    if(d)
+    if(d != -1)
         v.push_back(d);
 
     return v;
 }
-std::vector<short> Damier::blackNormalEat(short x)
+std::vector<short> Damier::blackManEat(short x)
 {
     std::vector<short> v;
     short a=this->eatWhiteUpRight(x);
     short b=this->eatWhiteUpLeft(x);
     short c=this->eatWhiteDownRight(x);
     short d=this->eatWhiteDownLeft(x);
-    if(a)
+    if(a != -1)
         v.push_back(a);
-    if(b)
+    if(b != -1)
         v.push_back(b);
-    if(c)
+    if(c != -1)
         v.push_back(c);
-    if(d)
+    if(d != -1)
         v.push_back(d);
     return v;
 }
@@ -517,6 +518,90 @@ Damier::blackKingEat(short x)
     }
     return v;
 }
+
+std::vector<short>
+Damier::movesOf(short x)
+{
+    switch(tab[x])
+    {
+    case WHITE:
+        return whiteManMove(x);
+        //Obviously no need for break statement.
+    case BLACK:
+        return blackManMove(x);
+    case BLACK_KING:
+    case WHITE_KING:
+        return kingMove(x);
+    default :
+        return std::vector<short>();
+    }
+}
+
+std::vector<short>
+Damier::eatsOf(short x)
+{
+    switch(tab[x])
+    {
+    case WHITE:
+        return whiteManEat(x);
+        //Obviously no need for break statement.
+    case BLACK:
+        return blackManEat(x);
+    case BLACK_KING:
+        return blackKingEat(x);
+    case WHITE_KING:
+        return whiteKingEat(x);
+    default :
+        return std::vector<short>();
+    }
+}
+
+std::vector<std::pair<short int, short int>>
+Damier::getPossibleMoves(Player *p)
+{
+    std::vector<std::pair<short int, short int>> moves;
+    //Get the player's color
+    Piece color = p->getColor();
+
+    //For every entry in the board
+    for(int i = 0; i < 50; i++)
+    {
+        short x = (short)color & tab[i];
+        //Check if it is the right color
+        if(x != 0)
+        {
+            for(auto m : movesOf(i))
+            {
+                moves.push_back(std::make_pair(i, m));
+            }
+        }
+    }
+    return moves;
+}
+
+std::vector<std::pair<short int, short int>>
+Damier::getPossibleEats(Player *p)
+{
+    std::vector<std::pair<short int, short int>> eats;
+    //Get the player's color
+    Piece color = p->getColor();
+
+    //For every entry in the board
+    for(int i = 0; i < 50; i++)
+    {
+        short x = (short)color & tab[i];
+        //Check if it is the right color
+        if(x != 0)
+        {
+            for(auto e : eatsOf(i))
+            {
+                eats.push_back(std::make_pair(i, e));
+            }
+        }
+    }
+    return eats;
+}
+
 void
 Damier::draw(float x, float y, float size)
 {

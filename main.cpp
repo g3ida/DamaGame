@@ -91,5 +91,7 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
+    Game::getInstance().quit();
+
     return EXIT_SUCCESS;
 }
