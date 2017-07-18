@@ -12,6 +12,7 @@ public :
 
     void update();
     void draw();
+    void play(Player* p);
     void onKey(unsigned char key, int x, int y);
     void onMouse(int button, int state, int x, int y);
     void resize(int w, int h);

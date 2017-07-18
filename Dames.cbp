@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++14" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++14" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -34,11 +36,11 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
-			<Add library="opengl32" />
+			<Add library="freeglut" />
 			<Add library="glu32" />
+			<Add library="opengl32" />
 			<Add library="winmm" />
 			<Add library="gdi32" />
-			<Add library="libs/freeglut/lib/x64/libfreeglut.a" />
 		</Linker>
 		<Unit filename="Damier.cpp" />
 		<Unit filename="Damier.h" />

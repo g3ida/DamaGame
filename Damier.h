@@ -25,6 +25,8 @@ public :
     std::vector<short> movesOf(short x);
     std::vector<short> eatsOf(short x);
 
+    void createKings();
+
     std::vector<std::pair<short int, short int>> getPossibleMoves(Player *p);
     std::vector<std::pair<short int, short int>> getPossibleEats(Player *p);
 

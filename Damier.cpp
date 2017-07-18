@@ -144,12 +144,10 @@ Damier::whiteManMove(short x)
     if( (a !=(-1)) && tab[a] == EMPTY)
     {
                 v.push_back(a);
-                LOG("white right", a, "\n");
     }
-    if( (b!=(-1)) && tab[a] == EMPTY )
+    if( (b!=(-1)) && tab[b] == EMPTY )
     {
         v.push_back(b);
-        LOG("white right ", b, "\n");
     }
     return v;
 }
@@ -161,7 +159,7 @@ Damier::blackManMove(short x)
     short b=incrementRight(x);
     if( (a !=(-1)) && tab[a] == EMPTY )
         v.push_back(a);
-    if( (b!=(-1)) && tab[a] == EMPTY )
+    if( (b!=(-1)) && tab[b] == EMPTY )
         v.push_back(b);
     return v;
 }
@@ -529,12 +527,45 @@ void
 Damier::performMove(short i, short j)
 {
     tab[j] = tab[i];
+    tab[i] = EMPTY;
 }
 
 void
 Damier::performEat(short i, short j)
 {
+    tab[j] = tab[i];
+    tab[i] = EMPTY;
+    switch(i-j)
+    {
+    case 9:
+        tab[decrementRight(i)] = EMPTY;
+        break;
+    case 11:
+        tab[decrementLeft(i)] = EMPTY;
+        break;
+    case -9:
+        tab[incrementLeft(i)] = EMPTY;
+        break;
+    case -11:
+        tab[incrementRight(i)] = EMPTY;
+        break;
+    }
+}
 
+void
+Damier::createKings()
+{
+    for(int i = 0; i<5; i++)
+    {
+        if(tab[i] == BLACK)
+        {
+            tab[i] = BLACK_KING;
+        }
+        if(tab[SIZE- i+1] == WHITE)
+        {
+            tab[i] = WHITE_KING;
+        }
+    }
 }
 
 std::vector<short>
@@ -590,7 +621,6 @@ Damier::getPossibleMoves(Player *p)
         {
             for(auto m : movesOf(i))
             {
-                LOG("move ", i, " ", m, "\n");
                 moves.push_back(std::make_pair(i, m));
             }
         }
@@ -683,6 +713,4 @@ Damier::draw(float x, float y, float size)
         }
     }
     glPopMatrix();
-    //for(int i=0; i<50; i++)
-        //LOG(i, " inc left -> ", incrementLeft(i), "\n");
 }

@@ -7,30 +7,6 @@
 #include <GL/glut.h>
 #endif
 
-#ifdef POSIX
-#include <unistd.h>
-#endif
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#ifdef _WIN64
-#include <windows.h>
-#endif
-
-
-void mySleep(int sleepMs)
-{
-#ifdef POSIX
-    usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
-#endif
-#ifdef _WIN64
-    Sleep(sleepMs);
-#endif
-#ifdef _WIN32
-    Sleep(sleepMs);
-#endif
-}
-
 //Glut callbacks
 static void displayCallback()
 {
@@ -42,7 +18,6 @@ static void displayCallback()
 static void idleCallback()
 {
     Game::getInstance().update();
-    mySleep(100);
 }
 
 static void reshapeCallback(int w, int h)

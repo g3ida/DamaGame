@@ -10,7 +10,7 @@
 #include "Log.h"
 
 #include "Shapes.h"
-#include <windows.h>
+#include "Utils.h"
 
 void
 Game::init(const std::string& windowTitle)
@@ -72,97 +72,67 @@ Game::draw()
 void
 Game::update()
 {
-    //LOG("update\n");
+    mySleep(100);
     glutPostRedisplay();
 
     switch(currentState)
     {
-    //player1 turn.
     case TURN_1:
-        if(turnFirstPass)
-        {
-            possiblePlays.clear();
-            possiblePlays = damier.getPossibleEats(player1);
-            turnFirstPass = false;
-        }
-        //If there are no jumps.
-        if(possiblePlays.empty())
-        {
-  //          LOG("no jumps");
-            //See if there are some available moves.
-            possiblePlays = damier.getPossibleMoves(player1);
-    //        LOG("got possible moves");
-            //If there is nothing to do then the player has lost.
-            if(possiblePlays.empty())
-            {
-      //          LOG("you cannot win");
-                currentState = VICTORY_2;
-                break;
-            }
-            //Chose one move among the possible ones.
-            auto m = player1->makeMove(damier, possiblePlays);
-            LOG(m.first, " white ", m.second, "\n");
-            //If it is not a thinking state.
-            if(m.first != -1)
-            {
-                Sleep(1000);
-                currentState = TURN_2;
-                turnFirstPass = true;
-                damier.set(damier.at(m.first), m.second);
-                damier.set(Damier::EMPTY, m.first);
-
-            }
-        }
-        else
-        {
-            auto m = player1->makeMove(damier, possiblePlays);
-        }
+        play(player1);
         break;
-    //player2 turn.
     case TURN_2:
-        if(turnFirstPass)
-        {
-            possiblePlays.clear();
-            possiblePlays = damier.getPossibleEats(player2);
-            turnFirstPass = false;
-        }
-        //If there are no jumps.
+        play(player2);
+        break;
+    case VICTORY_1:
+        LOG("player 1 won\n");
+        break;
+    case VICTORY_2:
+        LOG("player 2 won\n");
+        break;
+    case DRAW:
+        LOG("it's a draw");
+        break;
+    }
+}
+
+void
+Game::play(Player* p)
+{
+    if(turnFirstPass)
+    {
+        possiblePlays.clear();
+        possiblePlays = damier.getPossibleEats(p);
+        turnFirstPass = false;
+    }
+    //If there are no jumps.
+    if(possiblePlays.empty())
+    {
+        //See if there are some available moves.
+        possiblePlays = damier.getPossibleMoves(p);
+        //If there is nothing to do then the player has lost.
         if(possiblePlays.empty())
         {
-            //See if there are some available moves.
-            possiblePlays = damier.getPossibleMoves(player2);
-
-            //If there is nothing to do then the player has lost.
-            if(possiblePlays.empty())
-            {
-                currentState = VICTORY_1;
-                break;
-            }
-            //Chose one move among the possible ones.
-            auto m = player2->makeMove(damier, possiblePlays);
-            //If it is not a thinking state.
-                        LOG(m.first, " white ", m.second, "\n");
-
-            if(m.first != -1)
-            {
-                Sleep(1000);
-                currentState = TURN_1;
-                turnFirstPass = true;
-                damier.set(damier.at(m.first), m.second);
-                damier.set(Damier::EMPTY, m.first);
-
-            }
+            currentState = ((currentState == TURN_1) ? VICTORY_2 : VICTORY_1);
+            return;
         }
-        else
+        //Chose one move among the possible ones.
+        auto m = p->makeMove(damier, possiblePlays);
+        //If it is not a thinking state.
+        if(m.first != -1)
         {
-            auto m = player2->makeMove(damier, possiblePlays);
+            mySleep(1000);
+            currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
+            turnFirstPass = true;
+            damier.performMove(m.first, m.second);
         }
-        break;
-
-    case VICTORY_1:
-    case VICTORY_2:
-    case DRAW:
-        break;
+    }
+    else
+    {
+        mySleep(1000);
+        auto m = p->makeMove(damier, possiblePlays);
+        damier.performEat(m.first, m.second);
+        currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
+        turnFirstPass = true;
     }
 }
 
