@@ -168,13 +168,13 @@ Damier::kingMove(short x)
 {
     std::vector<short> v;
 
-    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
     for (auto e : t)
     {
         while(e != (-1) && (isEmpty(e)))
         {
             v.push_back(e);
-            e= incrementLeft(e);
+            e = incrementLeft(e);
         }
     }
     return v;
@@ -335,7 +335,7 @@ Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
 
-    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
     for (auto z : t)
     {
         short z1;
@@ -368,7 +368,7 @@ Damier::blackKingEat(short x)
 {
     std::vector<short> v;
 
-    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
     for (auto z : t)
     {
         short z1;
