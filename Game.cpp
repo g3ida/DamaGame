@@ -120,7 +120,7 @@ Game::play(Player* p)
         //If it is not a thinking state.
         if(m.first != -1)
         {
-            mySleep(1000);
+            mySleep(200);
             currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
             turnFirstPass = true;
             damier.performMove(m.first, m.second);
@@ -128,12 +128,13 @@ Game::play(Player* p)
     }
     else
     {
-        mySleep(1000);
+        mySleep(200);
         auto m = p->makeMove(damier, possiblePlays);
         damier.performEat(m.first, m.second);
         currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
         turnFirstPass = true;
     }
+    damier.createKings();
 }
 
 void

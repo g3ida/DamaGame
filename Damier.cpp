@@ -167,30 +167,15 @@ std::vector<short>
 Damier::kingMove(short x)
 {
     std::vector<short> v;
-    short a=incrementLeft(x);
-    short b=incrementRight(x);
-    short c=decrementLeft(x);
-    short d=decrementRight(x);
 
-    while(a != (-1) && (this->isEmpty(a)))
+    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    for (auto e : t)
     {
-        v.push_back(a);
-        a= incrementLeft(a);
-    }
-    while(b != (-1) && (this->isEmpty(b)))
-    {
-        v.push_back(b);
-        b= incrementRight(b);
-    }
-    while(c != (-1) && (this->isEmpty(c)))
-    {
-        v.push_back(c);
-        c= decrementLeft(c);
-    }
-    while(d != (-1) && (this->isEmpty(d)))
-    {
-        v.push_back(d);
-        d= decrementRight(d);
+        while(e != (-1) && (isEmpty(e)))
+        {
+            v.push_back(e);
+            e= incrementLeft(e);
+        }
     }
     return v;
 }
@@ -349,85 +334,29 @@ std::vector<short>
 Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
-    short a=incrementLeft(x);
-    short b=incrementRight(x);
-    short c=decrementLeft(x);
-    short d=decrementRight(x);
-    short a1,b1,c1,d1;
-    while(a!=(-1) && this->isEmpty(a))
-    {
-        a1=a;
-        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
-    }
 
-    if(a!=(-1))
+    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    for (auto z : t)
     {
-        short e=this->eatBlackUpLeft(a1);
-        if(e)
+        short z1;
+        while(z!=(-1) && this->isEmpty(z))
         {
-            v.push_back(e);
-            e=incrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
+            z1=z;
+            z=incrementLeft(z); // at the end, z will take the first non empty place or -1 and a1 take the place before
+        }
+
+        if(z!=(-1))
+        {
+            short e=this->eatBlackUpLeft(z1);
+            if(e)
             {
                 v.push_back(e);
                 e=incrementLeft(e);
-            }
-        }
-    }
-    while(b!=(-1) && this->isEmpty(b))
-    {
-        b1=b;
-        b=incrementRight(a);
-    }
-    if(b!=(-1))
-    {
-        short e=this->eatBlackUpRight(b1);
-        if(e)
-        {
-            v.push_back(e);
-            e=incrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=incrementRight(e);
-            }
-        }
-    }
-    while(c!=(-1) && this->isEmpty(c))
-    {
-        c1=c;
-        c=decrementLeft(c);
-    }
-    if(c!=(-1))
-    {
-        short e=this->eatBlackDownLeft(c1);
-        if(e)
-        {
-            v.push_back(e);
-            e=decrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=decrementLeft(e);
-            }
-        }
-    }
-    while(d!=(-1) && this->isEmpty(d))
-    {
-        d1=d;
-        d=decrementRight(d);
-    }
-    if(d!=(-1))
-    {
-        short e=this->eatBlackDownRight(d1);
-        if(e)
-        {
-            v.push_back(e);
-            e=decrementRight(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=decrementRight(e);
+                while(e!=(-1) && this->isEmpty(e))
+                {
+                    v.push_back(e);
+                    e=incrementLeft(e);
+                }
             }
         }
     }
@@ -438,85 +367,29 @@ std::vector<short>
 Damier::blackKingEat(short x)
 {
     std::vector<short> v;
-    short a=incrementLeft(x);
-    short b=incrementRight(x);
-    short c=decrementLeft(x);
-    short d=decrementRight(x);
-    short a1,b1,c1,d1;
-    while(a!=(-1) && this->isEmpty(a))
-    {
-        a1=a;
-        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
-    }
 
-    if(a!=(-1))
+    short t[]={incrementLeft(x), incrementLeft(x), decrementLeft(x), decrementRight(x)};
+    for (auto z : t)
     {
-        short e=this->eatWhiteUpLeft(a1);
-        if(e)
+        short z1;
+        while(z!=(-1) && this->isEmpty(z))
         {
-            v.push_back(e);
-            e=incrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
+            z1=z;
+            z=incrementLeft(z); // at the end, z will take the first non empty place or -1 and a1 take the place before
+        }
+
+        if(z!=(-1))
+        {
+            short e=this->eatWhiteUpLeft(z1);
+            if(e)
             {
                 v.push_back(e);
                 e=incrementLeft(e);
-            }
-        }
-    }
-    while(b!=(-1) && this->isEmpty(b))
-    {
-        b1=b;
-        b=incrementRight(a);
-    }
-    if(b!=(-1))
-    {
-        short e=this->eatWhiteUpRight(b1);
-        if(e)
-        {
-            v.push_back(e);
-            e=incrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=incrementRight(e);
-            }
-        }
-    }
-    while(c!=(-1) && this->isEmpty(c))
-    {
-        c1=c;
-        c=decrementLeft(c);
-    }
-    if(c!=(-1))
-    {
-        short e=this->eatWhiteDownLeft(c1);
-        if(e)
-        {
-            v.push_back(e);
-            e=decrementLeft(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=decrementLeft(e);
-            }
-        }
-    }
-    while(d!=(-1) && this->isEmpty(d))
-    {
-        d1=d;
-        d=decrementRight(d);
-    }
-    if(d!=(-1))
-    {
-        short e=this->eatWhiteDownRight(d1);
-        if(e)
-        {
-            v.push_back(e);
-            e=decrementRight(e);
-            while(e!=(-1) && this->isEmpty(e))
-            {
-                v.push_back(e);
-                e=decrementRight(e);
+                while(e!=(-1) && this->isEmpty(e))
+                {
+                    v.push_back(e);
+                    e=incrementLeft(e);
+                }
             }
         }
     }
@@ -557,13 +430,13 @@ Damier::createKings()
 {
     for(int i = 0; i<5; i++)
     {
-        if(tab[i] == BLACK)
+        if(tab[i] == WHITE)
         {
             tab[i] = BLACK_KING;
         }
-        if(tab[SIZE- i+1] == WHITE)
+        if(tab[SIZE-i-1] == BLACK)
         {
-            tab[i] = WHITE_KING;
+            tab[SIZE-i-1] = BLACK_KING;
         }
     }
 }
@@ -698,13 +571,13 @@ Damier::draw(float x, float y, float size)
                         glColor3ub(0xFF,0xFF,0xFF);
                         drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
                         glColor3ub(0, 0, 0);
-                        drawKing(ox+j*dx, oy-size*0.01+i*dx, size*0.03f);
+                        drawKing(ox+j*dx, oy+size*0.01+i*dx, -size*0.03f);
                         break;
                     case BLACK_KING :
                         glColor3ub(0,0,0);
                         drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
                         glColor3ub(0xFF, 0xFF, 0xFF);
-                        drawKing(ox+j*dx, oy-0.01*size+i*dx, size*0.03f);
+                        drawKing(ox+j*dx, oy+0.01*size+i*dx, -size*0.03f);
                         break;
                     case EMPTY :
                         break;
