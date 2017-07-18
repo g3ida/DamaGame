@@ -526,23 +526,20 @@ Damier::performEat(short i, short j)
     tab[j] = tab[i];
     tab[i] = EMPTY;
 
-    switch(i-j)
-    {
-    case 9:
-        tab[decrementRight(i)] = EMPTY;
-        break;
-    case 11:
-        tab[decrementLeft(i)] = EMPTY;
-        break;
-    case -9:
-        tab[incrementLeft(i)] = EMPTY;
-        break;
-    case -11:
-        tab[incrementRight(i)] = EMPTY;
-        break;
-    }
-}
+    auto c1 = toXY(i);
+    auto c2 = toXY(j);
 
+    short s1 = ((c1.first > c2.first) ? -1 : 1);
+    short s2 = ((c1.second > c2.second) ? -1 : 1);
+    do
+    {
+        c1.first += s1;
+        c1.second += s2;
+        tab[fromXY(c1.first,c1.second)] = EMPTY;
+
+    } while(c1.first+s1 != c2.first);
+
+}
 void
 Damier::createKings()
 {
@@ -550,7 +547,7 @@ Damier::createKings()
     {
         if(tab[i] == WHITE)
         {
-            tab[i] = BLACK_KING;
+            tab[i] = WHITE_KING;
         }
         if(tab[SIZE-i-1] == BLACK)
         {
@@ -647,20 +644,20 @@ Damier::getPossibleEats(Player *p)
 std::pair<short, short>
 Damier::toXY(short x)
 {
-    static const short coords2dfrom1d[][2]={{0,0}, {3,0}, {5,0}, {7,0}, {9,0},
-                                            {1,1}, {2,1}, {4,1}, {6,1}, {8,1},
-                                            {0,2}, {3,2}, {5,2}, {7,2}, {9,2},
-                                            {1,3}, {2,3}, {4,3}, {6,3}, {8,3},
-                                            {0,4}, {3,4}, {5,4}, {7,4}, {9,4},
-                                            {1,5}, {2,5}, {4,5}, {6,5}, {8,5},
-                                            {0,6}, {3,6}, {5,6}, {7,6}, {9,6},
-                                            {1,7}, {2,7}, {4,7}, {6,7}, {8,7},
-                                            {0,8}, {3,8}, {5,8}, {7,8}, {9,8},
-                                            {1,9}, {2,9}, {4,9}, {6,9}, {8,9}};
+    static const short coords2dfrom1d[][2]={{1,0}, {3,0}, {5,0}, {7,0}, {9,0},
+                                            {0,1}, {2,1}, {4,1}, {6,1}, {8,1},
+                                            {1,2}, {3,2}, {5,2}, {7,2}, {9,2},
+                                            {0,3}, {2,3}, {4,3}, {6,3}, {8,3},
+                                            {1,4}, {3,4}, {5,4}, {7,4}, {9,4},
+                                            {0,5}, {2,5}, {4,5}, {6,5}, {8,5},
+                                            {1,6}, {3,6}, {5,6}, {7,6}, {9,6},
+                                            {0,7}, {2,7}, {4,7}, {6,7}, {8,7},
+                                            {1,8}, {3,8}, {5,8}, {7,8}, {9,8},
+                                            {0,9}, {2,9}, {4,9}, {6,9}, {8,9}};
     if(x > 49 || x < 0)
         return std::make_pair<short, short>(-1, -1);
 
-    return std::make_pair(coords2dfrom1d[x][1],coords2dfrom1d[x][2]);
+    return std::make_pair(coords2dfrom1d[x][0],coords2dfrom1d[x][1]);
 
 }
 
@@ -678,7 +675,7 @@ Damier::fromXY(short x, short y)
                                                 {-1,40,-1,41,-1,24,-1,43,-1,44},
                                                 {45,-1,46,-1,47,-1,48,-1,49,-1}};
     if(x > 9 || x < 0 || y > 9 || y < 0) return -1;
-    return coords1dfrom2d[x][y];
+    return coords1dfrom2d[y][x];
 }
 
 void
@@ -710,8 +707,8 @@ Damier::draw(float x, float y, float size)
     for(int p=0; p<50; p++)
     {
         auto tmp = toXY(p);
-        short i = tmp.first;
-        short j = tmp.second;
+        short i = tmp.second;
+        short j = tmp.first;
 
         switch(tab[p])
         {
