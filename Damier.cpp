@@ -3,6 +3,7 @@
 #include "Shapes.h"
 #include "Log.h"
 #include "Player.h"
+#include <functional>
 
 Damier::Damier()
 {
@@ -330,70 +331,182 @@ std::vector<short> Damier::blackManEat(short x)
         v.push_back(d);
     return v;
 }
+
+
 std::vector<short>
 Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
-
-    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
-    for (auto z : t)
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
+    short a1,b1,c1,d1;
+    while(a!=(-1) && this->isEmpty(a))
     {
-        short z1;
-        while(z!=(-1) && this->isEmpty(z))
-        {
-            z1=z;
-            z=incrementLeft(z); // at the end, z will take the first non empty place or -1 and a1 take the place before
-        }
+        a1=a;
+        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
+    }
 
-        if(z!=(-1))
+    if(a!=(-1))
+    {
+        short e=this->eatBlackUpLeft(a1);
+        if(e)
         {
-            short e=this->eatBlackUpLeft(z1);
-            if(e)
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
             {
                 v.push_back(e);
                 e=incrementLeft(e);
-                while(e!=(-1) && this->isEmpty(e))
-                {
-                    v.push_back(e);
-                    e=incrementLeft(e);
-                }
             }
         }
     }
-    return v;
+    while(b!=(-1) && this->isEmpty(b))
+    {
+        b1=b;
+        b=incrementRight(a);
+    }
+    if(b!=(-1))
+    {
+        short e=this->eatBlackUpRight(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementRight(e);
+            }
+        }
+    }
+    while(c!=(-1) && this->isEmpty(c))
+    {
+        c1=c;
+        c=decrementLeft(c);
+    }
+    if(c!=(-1))
+    {
+        short e=this->eatBlackDownLeft(c1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementLeft(e);
+            }
+        }
+    }
+    while(d!=(-1) && this->isEmpty(d))
+    {
+        d1=d;
+        d=decrementRight(d);
+    }
+    if(d!=(-1))
+    {
+        short e=this->eatBlackDownRight(d1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementRight(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementRight(e);
+            }
+        }
+    }
 }
 
 std::vector<short>
 Damier::blackKingEat(short x)
 {
     std::vector<short> v;
-
-    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
-    for (auto z : t)
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
+    short a1,b1,c1,d1;
+    while(a!=(-1) && this->isEmpty(a))
     {
-        short z1;
-        while(z!=(-1) && this->isEmpty(z))
-        {
-            z1=z;
-            z=incrementLeft(z); // at the end, z will take the first non empty place or -1 and a1 take the place before
-        }
+        a1=a;
+        a=incrementLeft(a); // at the end, a will take the first non empty place or -1 and a1 take the place before
+    }
 
-        if(z!=(-1))
+    if(a!=(-1))
+    {
+        short e=this->eatWhiteUpLeft(a1);
+        if(e)
         {
-            short e=this->eatWhiteUpLeft(z1);
-            if(e)
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
             {
                 v.push_back(e);
                 e=incrementLeft(e);
-                while(e!=(-1) && this->isEmpty(e))
-                {
-                    v.push_back(e);
-                    e=incrementLeft(e);
-                }
             }
         }
     }
-    return v;
+    while(b!=(-1) && this->isEmpty(b))
+    {
+        b1=b;
+        b=incrementRight(a);
+    }
+    if(b!=(-1))
+    {
+        short e=this->eatWhiteUpRight(a1);
+        if(e)
+        {
+            v.push_back(e);
+            e=incrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=incrementRight(e);
+            }
+        }
+    }
+    while(c!=(-1) && this->isEmpty(c))
+    {
+        c1=c;
+        c=decrementLeft(c);
+    }
+    if(c!=(-1))
+    {
+        short e=this->eatWhiteDownLeft(c1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementLeft(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementLeft(e);
+            }
+        }
+    }
+    while(d!=(-1) && this->isEmpty(d))
+    {
+        d1=d;
+        d=decrementRight(d);
+    }
+    if(d!=(-1))
+    {
+        short e=this->eatWhiteDownRight(d1);
+        if(e)
+        {
+            v.push_back(e);
+            e=decrementRight(e);
+            while(e!=(-1) && this->isEmpty(e))
+            {
+                v.push_back(e);
+                e=decrementRight(e);
+            }
+        }
+    }
 }
 
 void
@@ -470,6 +583,8 @@ Damier::eatsOf(short x)
     case BLACK:
         return blackManEat(x);
     case BLACK_KING:
+        for(auto i : blackKingEat(x))
+        LOG(x, " ", i, "\n");
         return blackKingEat(x);
     case WHITE_KING:
         return whiteKingEat(x);

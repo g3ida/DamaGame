@@ -117,6 +117,12 @@ Game::play(Player* p)
         }
         //Chose one move among the possible ones.
         auto m = p->makeMove(damier, possiblePlays);
+
+        if(damier.at(m.first) == Damier::BLACK_KING || damier.at(m.first) == Damier::WHITE_KING)
+        {
+            LOG(m.first, " king Move ", m.second);
+        }
+
         //If it is not a thinking state.
         if(m.first != -1)
         {
@@ -130,6 +136,11 @@ Game::play(Player* p)
     {
         mySleep(200);
         auto m = p->makeMove(damier, possiblePlays);
+
+        if(damier.at(m.first) == Damier::BLACK_KING || damier.at(m.first) == Damier::WHITE_KING)
+        {
+            LOG(m.first, " king Eat ", m.second);
+        }
         damier.performEat(m.first, m.second);
         currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
         turnFirstPass = true;
