@@ -365,7 +365,7 @@ Damier::whiteKingEat(short x)
     while(b!=(-1) && this->isEmpty(b))
     {
         b1=b;
-        b=incrementRight(a);
+        b=incrementRight(b);
     }
     if(b!=(-1))
     {
@@ -419,6 +419,7 @@ Damier::whiteKingEat(short x)
             }
         }
     }
+    return v;
 }
 
 std::vector<short>
@@ -453,7 +454,7 @@ Damier::blackKingEat(short x)
     while(b!=(-1) && this->isEmpty(b))
     {
         b1=b;
-        b=incrementRight(a);
+        b=incrementRight(b);
     }
     if(b!=(-1))
     {
@@ -507,6 +508,7 @@ Damier::blackKingEat(short x)
             }
         }
     }
+    return v;
 }
 
 void
