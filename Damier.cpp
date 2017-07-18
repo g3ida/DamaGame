@@ -351,7 +351,7 @@ Damier::whiteKingEat(short x)
     if(a!=(-1))
     {
         short e=this->eatBlackUpLeft(a1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=incrementLeft(e);
@@ -369,8 +369,8 @@ Damier::whiteKingEat(short x)
     }
     if(b!=(-1))
     {
-        short e=this->eatBlackUpRight(a1);
-        if(e)
+        short e=this->eatBlackUpRight(b1);
+        if(e != -1)
         {
             v.push_back(e);
             e=incrementLeft(e);
@@ -389,7 +389,7 @@ Damier::whiteKingEat(short x)
     if(c!=(-1))
     {
         short e=this->eatBlackDownLeft(c1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=decrementLeft(e);
@@ -408,7 +408,7 @@ Damier::whiteKingEat(short x)
     if(d!=(-1))
     {
         short e=this->eatBlackDownRight(d1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=decrementRight(e);
@@ -440,7 +440,7 @@ Damier::blackKingEat(short x)
     if(a!=(-1))
     {
         short e=this->eatWhiteUpLeft(a1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=incrementLeft(e);
@@ -458,8 +458,8 @@ Damier::blackKingEat(short x)
     }
     if(b!=(-1))
     {
-        short e=this->eatWhiteUpRight(a1);
-        if(e)
+        short e=this->eatWhiteUpRight(b1);
+        if(e != -1)
         {
             v.push_back(e);
             e=incrementLeft(e);
@@ -478,7 +478,7 @@ Damier::blackKingEat(short x)
     if(c!=(-1))
     {
         short e=this->eatWhiteDownLeft(c1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=decrementLeft(e);
@@ -497,7 +497,7 @@ Damier::blackKingEat(short x)
     if(d!=(-1))
     {
         short e=this->eatWhiteDownRight(d1);
-        if(e)
+        if(e != -1)
         {
             v.push_back(e);
             e=decrementRight(e);
@@ -508,6 +508,8 @@ Damier::blackKingEat(short x)
             }
         }
     }
+    for (auto h : v)
+        LOG(x, " ", h, " \n");
     return v;
 }
 
@@ -523,6 +525,7 @@ Damier::performEat(short i, short j)
 {
     tab[j] = tab[i];
     tab[i] = EMPTY;
+
     switch(i-j)
     {
     case 9:
@@ -641,6 +644,43 @@ Damier::getPossibleEats(Player *p)
     return eats;
 }
 
+std::pair<short, short>
+Damier::toXY(short x)
+{
+    static const short coords2dfrom1d[][2]={{0,0}, {3,0}, {5,0}, {7,0}, {9,0},
+                                            {1,1}, {2,1}, {4,1}, {6,1}, {8,1},
+                                            {0,2}, {3,2}, {5,2}, {7,2}, {9,2},
+                                            {1,3}, {2,3}, {4,3}, {6,3}, {8,3},
+                                            {0,4}, {3,4}, {5,4}, {7,4}, {9,4},
+                                            {1,5}, {2,5}, {4,5}, {6,5}, {8,5},
+                                            {0,6}, {3,6}, {5,6}, {7,6}, {9,6},
+                                            {1,7}, {2,7}, {4,7}, {6,7}, {8,7},
+                                            {0,8}, {3,8}, {5,8}, {7,8}, {9,8},
+                                            {1,9}, {2,9}, {4,9}, {6,9}, {8,9}};
+    if(x > 49 || x < 0)
+        return std::make_pair<short, short>(-1, -1);
+
+    return std::make_pair(coords2dfrom1d[x][1],coords2dfrom1d[x][2]);
+
+}
+
+short
+Damier::fromXY(short x, short y)
+{
+    static const short coords1dfrom2d[][10] =  {{-1, 0,-1, 1,-1, 2,-1, 3,-1, 4},
+                                                { 5,-1, 6,-1, 7,-1, 8,-1, 9,-1},
+                                                {-1,10,-1,11,-1,12,-1,13,-1,14},
+                                                {15,-1,16,-1,17,-1,18,-1,19,-1},
+                                                {-1,20,-1,21,-1,22,-1,23,-1,24},
+                                                {25,-1,26,-1,27,-1,28,-1,29,-1},
+                                                {-1,30,-1,31,-1,32,-1,33,-1,34},
+                                                {35,-1,36,-1,37,-1,38,-1,39,-1},
+                                                {-1,40,-1,41,-1,24,-1,43,-1,44},
+                                                {45,-1,46,-1,47,-1,48,-1,49,-1}};
+    if(x > 9 || x < 0 || y > 9 || y < 0) return -1;
+    return coords1dfrom2d[x][y];
+}
+
 void
 Damier::draw(float x, float y, float size)
 {
@@ -657,49 +697,46 @@ Damier::draw(float x, float y, float size)
     float ox = x - size*0.5f;
     float oy = y - size*0.5f;
     float dx = size/10.f;
-    for(int i = 0; i<10; i++)
+
+    for(int i=0; i<50; i++)
     {
-        for(int j = 0; j<10; j++)
-        {
-            if((i+j)%2 == 1)
-                drawRectangleFilled(ox+i*dx, oy+j*dx, dx, dx, false);
-        }
+        auto tmp = toXY(i);
+        drawRectangleFilled(ox+tmp.first*dx, oy+tmp.second*dx, dx, dx, false);
     }
-    //Afficher les pieces
+
+    //Draw pieces.
     ox += size*0.05f;
     oy += size*0.05f;
-    for(int i = 0; i<10; i++)
+    for(int p=0; p<50; p++)
     {
-        for(int j = 0; j<10; j++)
+        auto tmp = toXY(p);
+        short i = tmp.first;
+        short j = tmp.second;
+
+        switch(tab[p])
         {
-            if((i+j)%2 == 1)
-            {
-                switch(tab[(i*10 + j)/2])
-                {
-                    case WHITE:
-                        glColor3ub(0xFF,0xFF,0xFF);
-                        drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
-                        break;
-                    case BLACK:
-                        glColor3ub(0,0,0);
-                        drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
-                        break;
-                    case WHITE_KING :
-                        glColor3ub(0xFF,0xFF,0xFF);
-                        drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
-                        glColor3ub(0, 0, 0);
-                        drawKing(ox+j*dx, oy+size*0.01+i*dx, -size*0.03f);
-                        break;
-                    case BLACK_KING :
-                        glColor3ub(0,0,0);
-                        drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
-                        glColor3ub(0xFF, 0xFF, 0xFF);
-                        drawKing(ox+j*dx, oy+0.01*size+i*dx, -size*0.03f);
-                        break;
-                    case EMPTY :
-                        break;
-                }
-            }
+        case WHITE:
+            glColor3ub(0xFF,0xFF,0xFF);
+            drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
+            break;
+        case BLACK:
+            glColor3ub(0,0,0);
+            drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
+            break;
+        case WHITE_KING :
+            glColor3ub(0xFF,0xFF,0xFF);
+            drawCircleFilled(ox+j*dx,oy+i*dx, size*0.04f, numSamples);
+            glColor3ub(0, 0, 0);
+            drawKing(ox+j*dx, oy+size*0.01+i*dx, -size*0.03f);
+            break;
+        case BLACK_KING :
+            glColor3ub(0,0,0);
+            drawCircleFilled( ox+j*dx, oy+i*dx, size*0.04f, numSamples);
+            glColor3ub(0xFF, 0xFF, 0xFF);
+            drawKing(ox+j*dx, oy+0.01*size+i*dx, -size*0.03f);
+            break;
+        case EMPTY :
+            break;
         }
     }
     glPopMatrix();

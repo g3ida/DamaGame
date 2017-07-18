@@ -30,6 +30,10 @@ public :
     std::vector<std::pair<short int, short int>> getPossibleMoves(Player *p);
     std::vector<std::pair<short int, short int>> getPossibleEats(Player *p);
 
+    //Some conversion functions useful for drawing and other things.
+    std::pair<short, short> toXY(short x);
+    short fromXY(short x, short y);
+
 
 private :
     std::vector<short> whiteManMove(short x);
@@ -52,4 +56,6 @@ private :
 
     static const int SIZE = 50;
     Piece tab[SIZE];
+
+
 };
