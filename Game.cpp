@@ -56,7 +56,7 @@ Game::getInstance()
 void
 Game::draw()
 {
-    LOG("display\n");
+//    LOG("display\n");
 
     glClearColor(0.3f,0.7f,0.7f,0.f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -88,20 +88,20 @@ Game::update()
         //If there are no jumps.
         if(possiblePlays.empty())
         {
-            LOG("no jumps");
+  //          LOG("no jumps");
             //See if there are some available moves.
             possiblePlays = damier.getPossibleMoves(player1);
-            LOG("got possible moves");
+    //        LOG("got possible moves");
             //If there is nothing to do then the player has lost.
             if(possiblePlays.empty())
             {
-                LOG("you cannot win");
+      //          LOG("you cannot win");
                 currentState = VICTORY_2;
                 break;
             }
             //Chose one move among the possible ones.
             auto m = player1->makeMove(damier, possiblePlays);
-            LOG(m.first, " ", m.second, "\n");
+            LOG(m.first, " white ", m.second, "\n");
             //If it is not a thinking state.
             if(m.first != -1)
             {
@@ -131,6 +131,7 @@ Game::update()
         {
             //See if there are some available moves.
             possiblePlays = damier.getPossibleMoves(player2);
+
             //If there is nothing to do then the player has lost.
             if(possiblePlays.empty())
             {
@@ -140,6 +141,8 @@ Game::update()
             //Chose one move among the possible ones.
             auto m = player2->makeMove(damier, possiblePlays);
             //If it is not a thinking state.
+                        LOG(m.first, " white ", m.second, "\n");
+
             if(m.first != -1)
             {
                 Sleep(1000);

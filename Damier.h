@@ -19,6 +19,9 @@ public :
     bool isEmpty(short x);
     bool isWhite(short x);
 
+    void performMove(short i, short j);
+    void performEat(short i, short j);
+
     std::vector<short> movesOf(short x);
     std::vector<short> eatsOf(short x);
 

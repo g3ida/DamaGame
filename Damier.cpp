@@ -22,8 +22,8 @@ Damier::reset()
     clear();
     for(int i=0; i<20; i++)
     {
-        tab[i] = WHITE;
-        tab[50-i-1] = BLACK;
+        tab[i] = BLACK;
+        tab[50-i-1] = WHITE;
     }
 }
 
@@ -136,19 +136,25 @@ static short incrementRight(short x)
    return(-1);
 }
 std::vector<short>
-Damier::blackManMove(short x)
+Damier::whiteManMove(short x)
 {
     std::vector<short> v;
     short a=decrementLeft(x);
     short b=decrementRight(x);
     if( (a !=(-1)) && tab[a] == EMPTY)
-        v.push_back(a);
+    {
+                v.push_back(a);
+                LOG("white right", a, "\n");
+    }
     if( (b!=(-1)) && tab[a] == EMPTY )
+    {
         v.push_back(b);
+        LOG("white right ", b, "\n");
+    }
     return v;
 }
 std::vector<short>
-Damier::whiteManMove(short x)
+Damier::blackManMove(short x)
 {
     std::vector<short> v;
     short a=incrementLeft(x);
@@ -519,6 +525,18 @@ Damier::blackKingEat(short x)
     return v;
 }
 
+void
+Damier::performMove(short i, short j)
+{
+    tab[j] = tab[i];
+}
+
+void
+Damier::performEat(short i, short j)
+{
+
+}
+
 std::vector<short>
 Damier::movesOf(short x)
 {
@@ -572,6 +590,7 @@ Damier::getPossibleMoves(Player *p)
         {
             for(auto m : movesOf(i))
             {
+                LOG("move ", i, " ", m, "\n");
                 moves.push_back(std::make_pair(i, m));
             }
         }
