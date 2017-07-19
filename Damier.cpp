@@ -21,13 +21,11 @@ void
 Damier::reset()
 {
     clear();
-/*    for(int i=0; i<20; i++)
+    for(int i=0; i<20; i++)
     {
         tab[i] = BLACK;
         tab[50-i-1] = WHITE;
-    }*/
-    tab[27] = WHITE_KING;
-    tab[32] = BLACK;
+    }
 }
 
 void
@@ -343,7 +341,7 @@ Damier::whiteKingEat(short x)
     short b=incrementRight(x);
     short c=decrementLeft(x);
     short d=decrementRight(x);
-    short a1=a,b1=b,c1=c,d1=d;
+    short a1=x,b1=x,c1=x,d1=x;
     while(a!=(-1) && this->isEmpty(a))
     {
         a1=a;
@@ -436,7 +434,7 @@ Damier::blackKingEat(short x)
     short b=incrementRight(x);
     short c=decrementLeft(x);
     short d=decrementRight(x);
-    short a1=a,b1=b,c1=c,d1=d;
+    short a1=x,b1=x,c1=x,d1=x;
     while(a!=(-1) && this->isEmpty(a))
     {
         a1=a;
