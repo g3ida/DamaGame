@@ -20,7 +20,9 @@ public :
     bool isWhite(short x);
 
     void performMove(short i, short j);
-    void performEat(short i, short j);
+
+    //Returns the position of the eat. Can be quite handy.
+    short performEat(short i, short j);
 
     std::vector<short> movesOf(short x);
     std::vector<short> eatsOf(short x);

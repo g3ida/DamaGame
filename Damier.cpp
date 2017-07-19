@@ -21,11 +21,13 @@ void
 Damier::reset()
 {
     clear();
-    for(int i=0; i<20; i++)
+/*    for(int i=0; i<20; i++)
     {
         tab[i] = BLACK;
         tab[50-i-1] = WHITE;
-    }
+    }*/
+    tab[27] = WHITE_KING;
+    tab[32] = BLACK;
 }
 
 void
@@ -41,7 +43,7 @@ Damier::set(Piece p, int i)
 Damier::Piece
 Damier::at(int i)
 {
-    if(i < 0 || i > SIZE)
+    if(i < 0 || i >= SIZE)
         return EMPTY;
 
     return tab[i];
@@ -341,7 +343,7 @@ Damier::whiteKingEat(short x)
     short b=incrementRight(x);
     short c=decrementLeft(x);
     short d=decrementRight(x);
-    short a1,b1,c1,d1;
+    short a1=a,b1=b,c1=c,d1=d;
     while(a!=(-1) && this->isEmpty(a))
     {
         a1=a;
@@ -362,6 +364,7 @@ Damier::whiteKingEat(short x)
             }
         }
     }
+
     while(b!=(-1) && this->isEmpty(b))
     {
         b1=b;
@@ -381,6 +384,7 @@ Damier::whiteKingEat(short x)
             }
         }
     }
+
     while(c!=(-1) && this->isEmpty(c))
     {
         c1=c;
@@ -400,6 +404,7 @@ Damier::whiteKingEat(short x)
             }
         }
     }
+
     while(d!=(-1) && this->isEmpty(d))
     {
         d1=d;
@@ -426,11 +431,12 @@ std::vector<short>
 Damier::blackKingEat(short x)
 {
     std::vector<short> v;
+
     short a=incrementLeft(x);
     short b=incrementRight(x);
     short c=decrementLeft(x);
     short d=decrementRight(x);
-    short a1,b1,c1,d1;
+    short a1=a,b1=b,c1=c,d1=d;
     while(a!=(-1) && this->isEmpty(a))
     {
         a1=a;
@@ -508,8 +514,10 @@ Damier::blackKingEat(short x)
             }
         }
     }
-    for (auto h : v)
-        LOG(x, " ", h, " \n");
+    if(v.empty())
+    {
+        LOG("king at", x, " cannot eat\n");
+    }
     return v;
 }
 
@@ -520,25 +528,28 @@ Damier::performMove(short i, short j)
     tab[i] = EMPTY;
 }
 
-void
+short
 Damier::performEat(short i, short j)
 {
-    tab[j] = tab[i];
-    tab[i] = EMPTY;
+    set(at(i), j);
+    set(EMPTY, i);
 
     auto c1 = toXY(i);
     auto c2 = toXY(j);
 
     short s1 = ((c1.first > c2.first) ? -1 : 1);
     short s2 = ((c1.second > c2.second) ? -1 : 1);
-    do
+    while(true)
     {
         c1.first += s1;
         c1.second += s2;
-        tab[fromXY(c1.first,c1.second)] = EMPTY;
-
-    } while(c1.first+s1 != c2.first);
-
+        auto s = fromXY(c1.first,c1.second);
+        if(at(s) != EMPTY)
+        {
+            set(EMPTY, s);
+            return s;
+        }
+    }
 }
 void
 Damier::createKings()
@@ -577,7 +588,7 @@ Damier::movesOf(short x)
 std::vector<short>
 Damier::eatsOf(short x)
 {
-    switch(tab[x])
+    switch(at(x))
     {
     case WHITE:
         return whiteManEat(x);
@@ -585,8 +596,6 @@ Damier::eatsOf(short x)
     case BLACK:
         return blackManEat(x);
     case BLACK_KING:
-        for(auto i : blackKingEat(x))
-        LOG(x, " ", i, "\n");
         return blackKingEat(x);
     case WHITE_KING:
         return whiteKingEat(x);
@@ -672,7 +681,7 @@ Damier::fromXY(short x, short y)
                                                 {25,-1,26,-1,27,-1,28,-1,29,-1},
                                                 {-1,30,-1,31,-1,32,-1,33,-1,34},
                                                 {35,-1,36,-1,37,-1,38,-1,39,-1},
-                                                {-1,40,-1,41,-1,24,-1,43,-1,44},
+                                                {-1,40,-1,41,-1,42,-1,43,-1,44},
                                                 {45,-1,46,-1,47,-1,48,-1,49,-1}};
     if(x > 9 || x < 0 || y > 9 || y < 0) return -1;
     return coords1dfrom2d[y][x];
