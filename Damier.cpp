@@ -374,7 +374,7 @@ Damier::whiteKingEat(short x)
         if(e != -1)
         {
             v.push_back(e);
-            e=incrementLeft(e);
+            e=incrementRight(e);
             while(e!=(-1) && this->isEmpty(e))
             {
                 v.push_back(e);
@@ -466,7 +466,7 @@ Damier::blackKingEat(short x)
         if(e != -1)
         {
             v.push_back(e);
-            e=incrementLeft(e);
+            e=incrementRight(e);
             while(e!=(-1) && this->isEmpty(e))
             {
                 v.push_back(e);
