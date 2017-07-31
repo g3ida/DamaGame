@@ -40,6 +40,10 @@ Damier::reset()
         tab[i] = BLACK;
         tab[_boardInfo[_board].boardSize-i-1] = WHITE;
     }
+/*
+    tab[28] = BLACK;
+    tab[29] = WHITE;
+    tab[18] = BLACK;*/
 }
 
 void
@@ -949,6 +953,17 @@ Damier::draw(float x, float y, float size) const
         Shapes::drawRectangleFilled(ox+tmp.first*dx, oy+tmp.second*dx, dx, dx, false);
     }
 
+    //Draw highlighted.
+    glColor4f(0.46274f, 0.407843f, 0.28627f, 0.2f);
+    glEnable(GL_BLEND); //Enable blending.
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set blending function.
+    for(auto h : _highlighted)
+    {
+        auto tmp = toXY(h);
+        Shapes::drawRectangleFilled(ox+tmp.first*dx, oy+tmp.second*dx, dx, dx, false);
+    }
+    //glDisable(GL_BLEND);
+
     float pieceSize = size * 0.4f / _boardInfo[_board].width;
     float kingSize = size * 0.3f / _boardInfo[_board].width;
 
@@ -1077,4 +1092,17 @@ void
 Damier::canKingFly(bool b)
 {
     _flyingKing = b;
+}
+
+void
+Damier::highlight(short x)
+{
+    if(x < 0 || x > _boardInfo[_board].boardSize) return;
+    _highlighted.push_back(x);
+}
+
+void
+Damier::unhighlightAll()
+{
+    _highlighted.clear();
 }

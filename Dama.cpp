@@ -192,6 +192,9 @@ Dama::update(unsigned int delay)
                 damier.createKings();
                 possibleEats.clear();
                 possibleMoves.clear();
+                //////////////
+                damier.unhighlightAll();
+                ////////////////
                 _curentPlayer = ((_curentPlayer == _player1)? _player2 : _player1);
                 if(Settings::mustEatMaxPieces())
                 {
@@ -239,7 +242,6 @@ Dama::play(Player* p)
             std::this_thread::sleep_for(100ms);
             damier.performMove(_lastMove.first, _lastMove.second);
             _state = State::Transition;
-            return;
         }
     }
     else
@@ -251,6 +253,18 @@ Dama::play(Player* p)
             damier.performEat(_lastMove.first, _lastMove.second);
             _state = State::Transition;
         }
+    }
+
+    for(auto x : possibleEats)
+    {
+       damier.highlight(x.first);
+       //damier.highlight(x.second);
+    }
+
+    for(auto x : possibleMoves)
+    {
+       damier.highlight(x.first);
+       //damier.highlight(x.second);
     }
 }
 

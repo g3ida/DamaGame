@@ -62,6 +62,9 @@ public :
     void canEatBakward(bool b);
     void canKingFly(bool b);
 
+    void highlight(short x);
+    void unhighlightAll();
+
 
 private :
     std::vector<short> whiteManMove(short x) const;
@@ -104,6 +107,8 @@ private :
     Piece _typeTr;
     bool _isEat = false;
     short _eatPos;
+
+    std::vector<int> _highlighted;
 
     Piece tab[MAX_SIZE];
 };
