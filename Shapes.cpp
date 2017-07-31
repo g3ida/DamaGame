@@ -5,10 +5,10 @@
 #endif
 
 #include <cmath>
-#include "Shapes.h"
-#include "Log.h"
 
-void drawCircle(float cx, float cy, float r, int num_segments)
+#include "Shapes.h"
+
+void Shapes::drawCircle(float cx, float cy, float r, int num_segments)
 {
     glBegin(GL_LINE_LOOP);
         for (int i = 0; i < num_segments; i++)
@@ -21,7 +21,7 @@ void drawCircle(float cx, float cy, float r, int num_segments)
     glEnd();
 }
 
-void drawCircleFilled(float cx, float cy, float r, int num_segments)
+void Shapes::drawCircleFilled(float cx, float cy, float r, int num_segments)
 {
     glBegin(GL_TRIANGLE_FAN);
         glVertex2f(cx,cy);
@@ -35,7 +35,7 @@ void drawCircleFilled(float cx, float cy, float r, int num_segments)
     glEnd();
 }
 
-void drawRectangleFilled(float x, float y, float w, float h, bool originAtCenter)
+void Shapes::drawRectangleFilled(float x, float y, float w, float h, bool originAtCenter)
 {
     if(originAtCenter)
     {
@@ -50,7 +50,7 @@ void drawRectangleFilled(float x, float y, float w, float h, bool originAtCenter
     glEnd();
 }
 
-void drawRectangle(float x, float y, float w, float h, bool originAtCenter)
+void Shapes::drawRectangle(float x, float y, float w, float h, bool originAtCenter)
 {
     if(originAtCenter)
     {
@@ -65,7 +65,7 @@ void drawRectangle(float x, float y, float w, float h, bool originAtCenter)
     glEnd();
 }
 
-void drawKing(float x, float y, float size)
+void Shapes::drawKing(float x, float y, float size)
 {
     //glPushMatrix();
 
@@ -99,5 +99,3 @@ void drawKing(float x, float y, float size)
 
     //glPopMatrix();
 }
-
-

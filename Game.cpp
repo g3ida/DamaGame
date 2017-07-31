@@ -1,210 +1,175 @@
+#include "Game.h"
+#include "InputQueue.h"
+#include "logger/Log.h"
+#include "MenuState.h"
+#include "PlayState.h"
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
 
-#include <cstdlib>
+//Handle gcc problem with C++11 threads standard  library on Windows.
+#ifdef __MINGW32__
+    #include "mingw_threads/mingw.condition_variable.h"
+    #include "mingw_threads/mingw.mutex.h"
+    #include "mingw_threads/mingw.thread.h"
+#else
+    #include <thread>
+    #include <condition_variable>
+    #include <mutex>
+#endif
 
-#include "Game.h"
-#include "Log.h"
+#include <chrono>
 
-#include "Shapes.h"
-#include "Utils.h"
+static std::mutex vector_mtx;
+
+Game::Game()
+{
+    _begin = clock();
+}
+
+bool
+Game::isStateStackEmpty()
+{
+    std::lock_guard<std::recursive_mutex> lk(_stack_mtx);
+    return _stateStack.empty();
+}
+
+using namespace std::literals::chrono_literals;
 
 void
-Game::init(const std::string& windowTitle)
+Game::operator()()
 {
-    damier.reset();
-    gameWindow = glutCreateWindow("Jeu De Dames");
+    pushState(new MenuState());
+    while(true)
+    {
+        if(isStateStackEmpty()) break;
 
-    player1 = new Player(Damier::WHITE);
-    player2 = new Player(Damier::BLACK);
+        InputQueue::Event e;
+        //InputQueue::getInstance().waitAndPop(e);
+        while(InputQueue::getInstance().tryPop(e))
+        {
+            std::lock_guard<std::recursive_mutex> lock(_stack_mtx);
+
+            GameState* tmp = _stateStack.back();
+            GameState* s = tmp->handleEvents(e);
+            if(s == nullptr || s != tmp)
+            {
+                changeState(s);
+            }
+        }
+
+        {
+            if(isStateStackEmpty()) break;
+
+            std::lock_guard<std::recursive_mutex> lock(_stack_mtx);
+            auto tmp = _stateStack.back();
+            _end = clock();
+            auto s = tmp->update((int)((double(_end - _begin) / CLOCKS_PER_SEC)* 1000));
+            _begin = _end;
+            if(s == nullptr || s != tmp)
+            {
+                changeState(s);
+            }
+        }
+        std::this_thread::sleep_for(30ms);
+    }
+    quit();
+
+}
+
+void
+Game::changeState(GameState* state)
+{
+	if(state == nullptr)
+    {
+        popState();
+        return;
+    }
+    std::lock_guard<std::recursive_mutex> lk(_stack_mtx);
+	//Cleanup the current state.
+	if (!_stateStack.empty())
+    {
+        _stateStack.back()->onClose();
+        delete _stateStack.back();
+		_stateStack.pop_back();
+	}
+	//Store and enter the new state.
+    _stateStack.push_back(state);
+	_stateStack.back()->onEnter();
+}
+
+void
+Game::pushState(GameState* state)
+{
+    std::lock_guard<std::recursive_mutex> lk(_stack_mtx);
+	//Pause current state.
+	if (!_stateStack.empty())
+    {
+		_stateStack.back()->pause();
+	}
+	//Store and enter the new state.
+    _stateStack.push_back(state);
+	_stateStack.back()->onEnter();
+}
+
+void
+Game::popState()
+{
+    std::lock_guard<std::recursive_mutex> lk(_stack_mtx);
+	// cleanup the current state.
+	if (!_stateStack.empty())
+    {
+        _stateStack.back()->onClose();
+        delete _stateStack.back();
+		_stateStack.pop_back();
+	}
+	//Resume previous state.
+	if (!_stateStack.empty())
+	{
+		_stateStack.back()->resume();
+	}
+}
+
+void
+Game::draw()
+{
+    //LOG("DRAW\n");
+    static std::mutex mtx;
+    std::lock_guard<std::mutex> lk(mtx);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    {
+        std::lock_guard<std::recursive_mutex> lkx(_stack_mtx);
+        _stateStack.back()->draw();
+    }
+
+    glFlush();
+	glutSwapBuffers();
+	//using namespace std::chrono_literals;
+	//std::this_thread::sleep_for(100ms);
+
 }
 
 void
 Game::quit()
 {
-    glutDestroyWindow(gameWindow);
-    gameWindow = 0;
-
-    delete player1;
-    delete player2;
+    std::lock_guard<std::recursive_mutex> lk(_stack_mtx);
+    while (!_stateStack.empty())
+    {
+        _stateStack.back()->onClose();
+        delete _stateStack.back();
+        _stateStack.pop_back();
+    }
+    exit(0);
 }
-
-
-Game::Game()
-{
-
-}
-
-int
-Game::getWindow()
-{
-    return gameWindow;
-}
-
 
 Game&
 Game::getInstance()
 {
-    static Game myGame;
-    return myGame;
+    static Game dam;
+    return dam;
 }
 
-
-void
-Game::draw()
-{
-//    LOG("display\n");
-
-    glClearColor(0.3f,0.7f,0.7f,0.f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glPushMatrix();
-    glLineWidth(2);
-
-    damier.draw(damierX, damierY, damierS);
-
-    glPopMatrix();
-}
-
-void
-Game::update()
-{
-    mySleep(100);
-    glutPostRedisplay();
-
-    switch(currentState)
-    {
-    case TURN_1:
-        play(player1);
-        break;
-    case TURN_2:
-        play(player2);
-        break;
-    case VICTORY_1:
-        LOG("player 1 won\n");
-        break;
-    case VICTORY_2:
-        LOG("player 2 won\n");
-        break;
-    case DRAW:
-        LOG("it's a draw");
-        break;
-    }
-}
-
-void
-Game::play(Player* p)
-{
-    if(turnFirstPass)
-    {
-        possiblePlays.clear();
-        possiblePlays = damier.getPossibleEats(p);
-        turnFirstPass = false;
-    }
-    //If there are no jumps.
-    if(possiblePlays.empty())
-    {
-        //See if there are some available moves.
-        possiblePlays = damier.getPossibleMoves(p);
-        //If there is nothing to do then the player has lost.
-        if(possiblePlays.empty())
-        {
-            currentState = ((currentState == TURN_1) ? VICTORY_2 : VICTORY_1);
-            return;
-        }
-        //Chose one move among the possible ones.
-        auto m = p->makeMove(damier, possiblePlays);
-
-        if(damier.at(m.first) == Damier::BLACK_KING || damier.at(m.first) == Damier::WHITE_KING)
-        {
-            LOG(m.first, " king Move ", m.second);
-        }
-
-        //If it is not a thinking state.
-        if(m.first != -1)
-        {
-            mySleep(200);
-            currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
-            turnFirstPass = true;
-            damier.performMove(m.first, m.second);
-        }
-    }
-    else
-    {
-        mySleep(200);
-        auto m = p->makeMove(damier, possiblePlays);
-
-        if(damier.at(m.first) == Damier::BLACK_KING || damier.at(m.first) == Damier::WHITE_KING)
-        {
-            LOG(m.first, " king Eat ", m.second);
-        }
-        damier.performEat(m.first, m.second);
-        currentState = ((currentState == TURN_1) ? TURN_2 : TURN_1);
-        turnFirstPass = true;
-    }
-    damier.createKings();
-}
-
-void
-Game::resize(int w, int h)
-{
-    screenWidth = w;
-    screenHeight = h;
-    LOG("resize", w, "x", h, "\n");
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window of zero width).
-	if(h == 0) h = 1;
-	// Use the Projection Matrix
-	glMatrixMode(GL_PROJECTION);
-    // Reset Matrix
-	glLoadIdentity();
-	// Set the viewport to be the entire window
-	glViewport(0, 0, w, h);
-    gluOrtho2D(0, w, h, 0);
-	// Get Back to the Modelview
-	glMatrixMode(GL_MODELVIEW);
-
-	damierX = screenWidth / 2;
-	damierY = screenHeight / 2;
-	damierS = ((w > h)? h : w)*0.75f;
-}
-
-void
-Game::onKey(unsigned char key, int x, int y)
-{
-    LOG("key\n");
-}
-
-void
-Game::onMouse(int button, int state, int x, int y)
-{
-    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-    {
-        if(x > damierX - damierS*0.5f && x < damierX +  damierS*0.5f &&
-           y > damierY - damierS*0.5f && y < damierY + damierS*0.5f)
-        {
-            int kx = (x - (int)(damierX - damierS*0.5f)) / ((int)damierS/10);
-            int ky = (y - (int)(damierY - damierS*0.5f)) / ((int)damierS/10);
-            int k = ky * 10 + kx;
-            if(ky % 2 == 0)
-            {
-                if(k % 2 == 1)
-                {
-                    LOG(k/2, "\n");
-                    clicPosition = k/2;
-                }
-            }
-            else
-            {
-                if(k % 2 == 0)
-                {
-                    LOG(k/2, "\n");
-                    clicPosition = k/2;
-                }
-            }
-        }
-    }
-}

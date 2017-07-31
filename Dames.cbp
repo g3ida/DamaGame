@@ -12,18 +12,16 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-std=c++14" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/Dames" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
-				<Option type="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++14" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,7 +30,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-std=c++14" />
+			<Add option="-std=c++1z" />
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Linker>
@@ -42,15 +40,40 @@
 			<Add library="winmm" />
 			<Add library="gdi32" />
 		</Linker>
+		<Unit filename="AchievementsState.cpp" />
+		<Unit filename="AchievementsSystem.h" />
+		<Unit filename="AchievmentsState.h" />
+		<Unit filename="ComputerPlayer.h" />
+		<Unit filename="CreditsState.cpp" />
+		<Unit filename="CreditsState.h" />
+		<Unit filename="Dama.cpp" />
+		<Unit filename="Dama.h" />
 		<Unit filename="Damier.cpp" />
 		<Unit filename="Damier.h" />
 		<Unit filename="Game.cpp" />
 		<Unit filename="Game.h" />
-		<Unit filename="Log.h" />
-		<Unit filename="Logger.cpp" />
-		<Unit filename="Logger.h" />
+		<Unit filename="GameState.h" />
+		<Unit filename="HumanPlayer.h" />
+		<Unit filename="InputQueue.h" />
+		<Unit filename="MenuState.cpp" />
+		<Unit filename="MenuState.h" />
+		<Unit filename="NotificationListner.h" />
+		<Unit filename="NotificationSystem.cpp" />
+		<Unit filename="NotificationSystem.h" />
+		<Unit filename="PlayState.cpp" />
+		<Unit filename="PlayState.h" />
+		<Unit filename="Player.h" />
+		<Unit filename="Settings.cpp" />
+		<Unit filename="Settings.h" />
+		<Unit filename="SettingsState.cpp" />
+		<Unit filename="SettingsState.h" />
 		<Unit filename="Shapes.cpp" />
 		<Unit filename="Shapes.h" />
+		<Unit filename="SoundManager.cpp" />
+		<Unit filename="SoundManager.h" />
+		<Unit filename="logger/Log.h" />
+		<Unit filename="logger/Logger.cpp" />
+		<Unit filename="logger/Logger.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
