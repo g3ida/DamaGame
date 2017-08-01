@@ -24,27 +24,40 @@ public :
         {
             if(std::find(moves.begin(), moves.end(), _clicPos) != moves.end())
             {
+                //If it is a good move.
                 auto tmp = _clicPos;
                 _clicPos.first = -1;
                 _clicPos.second = -1;
                 return tmp;
             }
+            else
+            {
+                //Check if the player changes his mind into a new move.
+                for(auto& p : moves)
+                {
+                    if(p.first == _clicPos.second)
+                    {
+                        _clicPos.first = _clicPos.second;
+                        _clicPos.second = -1;
+                        return _clicPos;
+                    }
+                }
+                //If it is a wrong move then undo everything.
+                _clicPos.first = -1;
+                _clicPos.second = -1;
+                return _clicPos;
+            }
         }
         else if(_clicPos.first != -1)
         {
-            bool found = false;
             for(auto& p : moves)
             {
                 if(p.first == _clicPos.first)
                 {
-                    found = true;
-                    break;
+                    return _clicPos;
                 }
             }
-            if(!found)
-            {
-                _clicPos.first = -1;
-            }
+            _clicPos.first = -1;
         }
         return std::make_pair(-1, -1);
     }

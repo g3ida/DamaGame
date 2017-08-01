@@ -243,6 +243,22 @@ Dama::play(Player* p)
             damier.performMove(_lastMove.first, _lastMove.second);
             _state = State::Transition;
         }
+        //If we already chosen a piece to play with.
+        else if(_lastMove.first != -1)
+        {
+            damier.unhighlightAll();
+            damier.highlight(_lastMove.first);
+            for(auto x : possibleMoves)
+                if(x.first == _lastMove.first)
+            damier.highlight(x.second);
+        }
+        //If we haven't selected anything yet.
+        else if(_lastMove.first == -1 && _lastMove.second == -1)
+        {
+            damier.unhighlightAll();
+            for(auto x : possibleMoves)
+                damier.highlight(x.first);
+        }
     }
     else
     {
@@ -253,8 +269,24 @@ Dama::play(Player* p)
             damier.performEat(_lastMove.first, _lastMove.second);
             _state = State::Transition;
         }
+        //If we already chosen a piece to play with.
+        else if(_lastMove.first != -1)
+        {
+            damier.unhighlightAll();
+            damier.highlight(_lastMove.first);
+            for(auto x : possibleEats)
+                if(x.first == _lastMove.first)
+            damier.highlight(x.second);
+        }
+        //If we haven't selected anything yet.
+        else if(_lastMove.first == -1 && _lastMove.second == -1)
+        {
+            damier.unhighlightAll();
+            for(auto x : possibleEats)
+                damier.highlight(x.first);
+        }
     }
-
+/*
     for(auto x : possibleEats)
     {
        damier.highlight(x.first);
@@ -265,7 +297,7 @@ Dama::play(Player* p)
     {
        damier.highlight(x.first);
        //damier.highlight(x.second);
-    }
+    }*/
 }
 
 void Dama::declareWin(Player* p)
