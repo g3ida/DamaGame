@@ -349,15 +349,17 @@ std::vector<short>
 Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
-
+    LOG("IS FLYING ? \n");
     if(!_flyingKing)
     {
+        LOG("yess \n");
         auto tmp = _eatBackward;
         _eatBackward = true;
         v = whiteManEat(x);
         _eatBackward = tmp;
         return v;
     }
+        LOG("No \n");
 
     short a=incrementLeft(x);
     short b=incrementRight(x);

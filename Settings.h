@@ -31,7 +31,7 @@ public:
 
     enum class Rule
     {
-        International, Canadian, English, Custom
+        International, Canadian, Chekers, Custom
     };
 
     static Rule getRule()
@@ -56,9 +56,9 @@ public:
             _backwardEat = true;
             _eatMaxPieces = true;
             break;
-        case Rule::English:
+        case Rule::Chekers:
             _boardSize = 8;
-            _flyingKing = true;
+            _flyingKing = false;
             _backwardEat = false;
             _eatMaxPieces = false;
             break;

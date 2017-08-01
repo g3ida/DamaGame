@@ -55,6 +55,7 @@ Dama::onEnter()
 
 	damier.setSize(Settings::getBoardSize());
 	damier.canEatBakward(Settings::canBackwardEat());
+	LOG("CAN KINGS FLY : ", Settings::canKingsFly());
 	damier.canKingFly(Settings::canKingsFly());
 	damier.reset();
 

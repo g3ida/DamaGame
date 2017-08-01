@@ -26,7 +26,7 @@ SettingsState::onEnter()
     _items[0].push_back(std::string("Sound volume :  <||||||||||>      "));
 
     _items[1].push_back(std::string("Game rules   : <International>    "));
-    _items[1].push_back(std::string("Game rules   : <   English   >    "));
+    _items[1].push_back(std::string("Game rules   : <   Chekers   >    "));
     _items[1].push_back(std::string("Game rules   : <   Canadian  >    "));
     _items[1].push_back(std::string("Game rules   : <   Custom    >    "));
 
@@ -76,7 +76,7 @@ SettingsState::loadSettings()
         _currentSubItem[4] = 1;
         _currentSubItem[5] = 1;
         break;
-    case Settings::Rule::English:
+    case Settings::Rule::Chekers:
         _currentSubItem[1] = 1;
         _currentSubItem[2] = 0;
         _currentSubItem[3] = 0;
@@ -110,7 +110,7 @@ SettingsState::saveSettings()
         Settings::setRule(Settings::Rule::International);
         break;
     case 1:
-        Settings::setRule(Settings::Rule::English);
+        Settings::setRule(Settings::Rule::Chekers);
         break;
     case 2:
         Settings::setRule(Settings::Rule::Canadian);
