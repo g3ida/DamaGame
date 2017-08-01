@@ -63,7 +63,7 @@ void
 SettingsState::loadSettings()
 {
     //Sound Volume.
-    _currentSubItem[0] = static_cast<int>(Settings::getSoundVolume() * _items[1].size());
+    _currentSubItem[0] = static_cast<int>(Settings::getSoundVolume() * _items[0].size());
 
     if(_currentSubItem[0] < 0) _currentSubItem[1] = 0;
     if(_currentSubItem[0] >= _items[0].size()) _currentSubItem[0] = _items[0].size()-1;
@@ -78,7 +78,7 @@ SettingsState::loadSettings()
         break;
     case Settings::Rule::English:
         _currentSubItem[1] = 1;
-        _currentSubItem[2] = 1;
+        _currentSubItem[2] = 0;
         _currentSubItem[3] = 0;
         _currentSubItem[4] = 0;
         _currentSubItem[5] = 0;
@@ -246,7 +246,7 @@ SettingsState::handleEvents(InputQueue::Event& e)
                 _currentSubItem[5] = 1;
                 break;
             case 1:
-                _currentSubItem[2] = 1;
+                _currentSubItem[2] = 0;
                 _currentSubItem[3] = 0;
                 _currentSubItem[4] = 0;
                 _currentSubItem[5] = 0;

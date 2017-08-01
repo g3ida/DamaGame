@@ -152,14 +152,30 @@ Damier::kingMove(short x) const
          return v;
     }
 
-    short t[]={incrementLeft(x), incrementRight(x), decrementLeft(x), decrementRight(x)};
-    for (auto e : t)
+    short a=incrementLeft(x);
+    short b=incrementRight(x);
+    short c=decrementLeft(x);
+    short d=decrementRight(x);
+
+    while(a != (-1) && (this->isEmpty(a)))
     {
-        while(e != (-1) && (isEmpty(e)))
-        {
-            v.push_back(e);
-            e = incrementLeft(e);
-        }
+        v.push_back(a);
+        a= incrementLeft(a);
+    }
+    while(b != (-1) && (this->isEmpty(b)))
+    {
+        v.push_back(b);
+        b= incrementRight(b);
+    }
+    while(c != (-1) && (this->isEmpty(c)))
+    {
+        v.push_back(c);
+        c= decrementLeft(c);
+    }
+    while(d != (-1) && (this->isEmpty(d)))
+    {
+        v.push_back(d);
+        d= decrementRight(d);
     }
     return v;
 }
