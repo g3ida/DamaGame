@@ -6,7 +6,24 @@
 #include "logger/Log.h"
 
 class Player;
+enum Damier::Piece;
 
+struct Action
+{
+    static Action createMove(short from, short pos)
+    {
+        return Action{'-', from, pos,-1,Damier::EMPTY};
+    }
+    static Action createEat(short from, short pos, short posEat, Damier::Piece p)
+    {
+        return Action{'x', from, pos,posEat,p};
+    }
+    char type;
+    short from;
+    short pos;
+    short eatPos;
+    Damier::Piece couleur;
+};
 class Damier
 {
 public :
@@ -64,7 +81,14 @@ public :
 
     void highlight(short x);
     void unhighlightAll();
-
+    
+    void Damier::performEatA(Action a);
+    void Damier::undoEat(Action a);
+    std::vector<std::vector<Action>> Damier::getPossibleMovesA(Player *p) const;
+    std::vector<std::vector<Action>> Damier::getAllEatAction(Player *p);
+    void Damier::recursive1(Player *p,std::vector<Action> previous,std::vector<std::vector<Action>> res);
+    std::vector<std::vector<Action>> Damier::getBestEatAction(Player *p);
+    void Damier::recursive(Player *p,std::vector<Action> retour,int n, int f,std::vector<std::vector<Action>> res);
 
 private :
     std::vector<short> whiteManMove(short x) const;
