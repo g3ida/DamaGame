@@ -693,6 +693,190 @@ Damier::getPossibleEats(Player *p)
     return eats;
 }
 
+void
+Damier::performEatA(Action a)
+{
+    performMove(a.from, a.pos);
+    set(at(a.eatPos), EMPTY);
+}
+void
+Damier::undoEat(Action a)
+{
+    performMove(a.pos,a.from)
+    set(at(a.eatPos),a.couleur)
+}
+
+void
+Damier::recursive(Player *p,std::vector<Action> retour,int n, int f,std::vector<std::vector<Action>> res)
+{
+    std::vector<Action> eatA;
+    std::vector<std::pair<short,short>> eat;
+    eat=getBestPossibleEats(p);
+    for(auto& x : eat)
+    {
+        auto c1 = toXY(x.first);
+        auto c2 = toXY(x.second);
+        Piece eaten;
+        int e;
+        short s1 = ((c1.first > c2.first) ? -1 : 1);
+        short s2 = ((c1.second > c2.second) ? -1 : 1);
+        while(true)
+        {
+            c1.first += s1;
+            c1.second += s2;
+            e = fromXY(c1.first,c1.second);
+            if(at(e) != EMPTY)
+            {
+                eaten = at(e);
+                break;
+            }
+        }
+        Action a = Action::createEat(x.first, x.second, e, eaten);
+        eatA.push_back(a);
+    }
+    if(n!= f)
+    {
+        for(int i=0;i<eatA.size();i++)
+        {
+            performEat(eatA[i]);
+            retour[n]=eatA[i];
+            recursive(p,retour,n+1,f)
+        }
+    }
+    else
+    {
+        retour[n]=eatA[i];
+        res.push_back(retour)
+    }
+    undoEat(eatA[eatA.size()-1]);
+
+}
+std::vector<std::vector<Action>>
+Damier::getBestEatAction(Player *p)
+{
+    int var=0;
+    std::vector<std::vector<Action>> res;
+    Piece color = p->getColor();
+    int maxi = 0;
+    int n=0;
+    for(int i = 0; i < _boardInfo[_board].boardSize; i++)
+    {
+        short x = (short)color & at(i);
+        //Check if it is the right color
+        if(x != 0)
+        {
+            int lclMaxi = maxConsecutiveEats(i);
+            if(lclMaxi > maxi)
+                {
+                    maxi = lclMaxi;
+                }
+        }
+    }
+    std::vector<Action> retour(maxi);
+    recursive(p,retour,n,maxi,res);
+    for(int i=0; i<res.size();i++)
+    {
+        bool tr =true;
+        var= res[i][0].pos;
+        for(int j=1;j<res[i].size();j++)
+        {
+            if (var!= res[i][j].from)
+                tr=false;
+            var= res[i][0].pos;
+        }
+        if(!tr)
+            res.erase(res.begin()+i);
+    }
+    return(res);
+
+}
+void
+Damier::recursive1(Player *p,std::vector<Action> previous,std::vector<std::vector<Action>> res)
+{
+    std::vector<Action> eatA,newElement;
+    newElement=previous;
+    std::vector<std::pair<short,short>> eat;
+    eat=getBestPossibleEats(p);
+    for(auto& x : eat)
+    {
+        auto c1 = toXY(x.first);
+        auto c2 = toXY(x.second);
+        Piece eaten;
+        int e;
+        short s1 = ((c1.first > c2.first) ? -1 : 1);
+        short s2 = ((c1.second > c2.second) ? -1 : 1);
+        while(true)
+        {
+            c1.first += s1;
+            c1.second += s2;
+            e = fromXY(c1.first,c1.second);
+            if(at(e) != EMPTY)
+            {
+                eaten = at(e);
+                break;
+            }
+        }
+        Action a = Action::createEat(x.first, x.second, e, eaten);
+        eatA.push_back(a);
+    }
+    if(!eatA.empty())
+    {
+        for(int i=0,i<eatA.size();i++)
+        {
+            newElement.push_back(eatA[i]);
+            res.push_back(newElement);
+            performEatA(eatA[i]);
+            recursive1(p,newElement,res);
+        }
+        undoEat(eatA[i-1]);
+    }
+}  
+std::vector<std::vector<Action>>
+Damier::getAllEatAction(Player *p)
+{
+    int var=0;
+    std::vector<std::vector<Action>> res;
+    Piece color = p->getColor();
+    std::vector<Action> previous;
+    recursive1(p,previous,res);
+    for(int i=0; i<res.size();i++)
+    {
+        bool tr =true;
+        var= res[i][0].pos;
+        for(int j=1;j<res[i].size();j++)
+        {
+            if (var!= res[i][j].from)
+                tr=false;
+            var= res[i][0].pos;
+        }
+        if(!tr)
+            res.erase(res.begin()+i);
+    }
+    return(res);
+
+}
+std::vector<std::vector<Action>>
+Damier::getPossibleMovesA(Player *p) const
+{
+    Piece color = p->getColor();
+    std::vector<std::vector<Action>> res;
+    for(int i = 0; i < _boardInfo[_board].boardSize; i++)
+    {
+        short x = (short)color & at(i);
+        if(x != 0)
+        {
+            for(auto m : movesOf(i))
+            {
+                std::vector<Action> moves;
+                Action a = Action::createMove(i,m);
+                moves.push_back(a);
+                res.push_back(moves);
+            }
+        }
+    }
+    return res;
+}
+
 std::pair<short int, short int>
 Damier::bestEatOf(short i)
 {
