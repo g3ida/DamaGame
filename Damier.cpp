@@ -4,9 +4,296 @@
 #include "logger/Log.h"
 #include "Player.h"
 #include <functional>
-
+#include "Settings.h"
+#include <iostream>
+#include <vector>
 #include <algorithm>
+#include <limits>
+#include <iostream>
+using namespace std;
+int const N= 500;//52.8903;
+int const K= 1000;//110;
+int const S= 5.0709;
+int const T= 5.1219;
+int const A= 5.1419;
+float const fmax = std::numeric_limits<float>::max();
+float const fmin = -fmax;
 
+nbWhite(Damier &d)
+{
+    int nb=0;
+     for(int l=0;l<50;l++)
+    {
+        if(d.at(l)==Damier::WHITE)
+            nb++;
+
+        if(d.at(l)==Damier::WHITE_KING)
+            nb++;
+    }
+    return(nb);
+}
+nbBlack(Damier &d)
+{
+    int nb=0;
+     for(int l=0;l<50;l++)
+    {
+        if(d.at(l)==Damier::BLACK)
+            nb++;
+
+        if(d.at(l)==Damier::BLACK_KING)
+            nb++;
+    }
+    return(nb);
+}
+pair<int,int> AttachedPieces(Damier &d)
+{
+    int k=0 , p=0;
+    for(int i=0; i<45;i++)
+    {
+        if(d.isWhite(i))
+        {
+            if(d.isWhite(d.incrementLeft(i)))
+                k++;
+            if(d.isWhite(d.incrementRight(i)))
+               k++;
+        }
+        else
+        {
+            if(!d.isEmpty(i))
+            {
+                if(!(d.isWhite(d.incrementLeft(i))) && !(d.isEmpty(d.incrementLeft(i))))
+                    p++;
+                if(!(d.isWhite(d.incrementRight(i))) && !(d.isEmpty(d.incrementRight(i))))
+                   p++;
+            }
+        }
+    }
+    pair<int,int> a(k,p);
+    return(a);
+}
+float MinMax::calculGain(Damier &d,Player* p,int playNumber)
+{
+    float Gain =0;
+    Damier::Piece color = p->getColor();
+    int nbBlck=nbBlack(d);
+    int nbWhte=nbWhite(d);
+    /*if(moves.empty())
+        return(-fmax)
+    else;*/
+    {
+        if(((nbWhite(d)==0) && (color==Damier::Piece::BLACK)) || ((nbBlack(d)==0) && (color==Damier::Piece::WHITE)))
+            return(fmax);
+    }
+   for(int i=0;i<this->moves.size();i++)
+   {
+        if(moves[i].type=='x')
+        {
+            if((this->moves[i].couleur)==Damier::WHITE)
+                Gain-=N*nbBlck;
+            else
+            {
+                if((this->moves[i].couleur)==Damier::WHITE_KING)
+                    Gain-=K*nbBlck;
+                else
+                {
+                    if((this->moves[i].couleur)==Damier::BLACK)
+                        Gain+=N*nbWhte;
+                    else
+                        Gain+=K*nbWhte;
+                }
+            }
+        }
+   }
+   for(int i=0;i<50;i++)
+   {
+         if(d.at(i)==Damier::WHITE)
+            Gain+=N;
+         if(d.at(i)==Damier::WHITE_KING)
+                Gain+=K;
+         if(d.at(i)==Damier::BLACK)
+            Gain-=N;
+         if(d.at(i)==Damier::BLACK_KING)
+            Gain-=K;
+
+   }
+   for(int l=20; l<30; l++)
+    {
+        if(d.at(l)==Damier::WHITE)
+            Gain+=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::WHITE_KING)
+            Gain+=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::BLACK)
+            Gain-=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::BLACK_KING)
+            Gain-=S*(nbWhte+nbBlck);
+    }
+    /*for(int l=0;l<5;l++)
+    {
+        if(d.at(l)==Damier::BLACK)
+                Gain-=T/playNumber;
+        if(d.at(l)==Damier::BLACK_KING)
+                Gain-=T/playNumber;
+    }
+    for(int l=45; l<50;l++)
+    {
+        if(d.at(l)==Damier::WHITE)
+            Gain+=T/playNumber;
+        if(d.at(l)==Damier::WHITE_KING)
+            Gain+=T/playNumber;
+    }*/
+    Gain+= (AttachedPieces(d).first)*A;
+    Gain-= (AttachedPieces(d).second)*A;
+    if(color == Damier::BLACK)
+        Gain= -Gain;
+    return(Gain);
+}
+/*float calGain(Damier &d,int playNumber,std::vector<Action> moves)
+{
+    float Gain =0;
+    int nbBlck=nbBlack(d);
+    int nbWhte=nbWhite(d);
+   for(int i=0;i<moves.size();i++)
+   {
+        if(moves[i].type=='x')
+        {
+            if((moves[i].couleur)==Damier::WHITE)
+                Gain-=N*nbBlck;
+            else
+            {
+                if((moves[i].couleur)==Damier::WHITE_KING)
+                    Gain-=K*nbBlck;
+                else
+                {
+                    if((moves[i].couleur)==Damier::BLACK)
+                        Gain+=N*nbWhte;
+                    else
+                        Gain+=K*nbWhte;
+                }
+            }
+        }
+   }
+   for(int i=0;i<50;i++)
+   {
+         if(d.at(i)==Damier::WHITE)
+            Gain+=N;
+         if(d.at(i)==Damier::WHITE_KING)
+                Gain+=K;
+         if(d.at(i)==Damier::BLACK)
+            Gain-=N;
+         if(d.at(i)==Damier::BLACK_KING)
+            Gain-=K;
+
+   }
+   for(int l=20; l<30; l++)
+    {
+        if(d.at(l)==Damier::WHITE)
+            Gain+=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::WHITE_KING)
+            Gain+=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::BLACK)
+            Gain-=S*(nbWhte+nbBlck);
+        if(d.at(l)==Damier::BLACK_KING)
+            Gain-=S*(nbWhte+nbBlck);
+    }
+    /*for(int l=0;l<5;l++)
+    {
+        if(d.at(l)==Damier::BLACK)
+                Gain-=T/playNumber;
+        if(d.at(l)==Damier::BLACK_KING)
+                Gain-=T/playNumber;
+    }
+    for(int l=45; l<50;l++)
+    {
+        if(d.at(l)==Damier::WHITE)
+            Gain+=T/playNumber;
+        if(d.at(l)==Damier::WHITE_KING)
+            Gain+=T/playNumber;
+    }
+    Gain+= (AttachedPieces(d).first)*A;
+    Gain-= (AttachedPieces(d).second)*A;
+    return(Gain);
+}*/
+void
+MinMax::makeTree (Damier &d, int k, Player* player1 ,Player* player2,int playNumber,int playerNumber)
+{
+    if(k!=0)
+    {
+        /*if(nextMoves.empty())
+        {
+
+        }
+        else*/
+        if(k==1)
+        {
+            LOG("First move of this set is :from : ", moves[0].from, "- pos : ", moves[0].pos, " eatpos", moves[0].eatPos ,"est : ",gain,"\n");
+        }
+        {
+        std::vector<std::vector<Action>> v=d.getBestThing(player1);
+        for(int i=0;i<v.size();i++)
+        {
+            MinMax a(d,player1,playNumber,this,gain,v[i],playerNumber);
+            nextMoves.push_back(a);
+            nextMoves[i].makeTree(d,k-1,player2,player1, playNumber+1,(playerNumber%2)+1);
+            //cout<<" Gain: "<<gain <<"\n";
+                d.undoTheAction(v[i]);
+            }
+
+        }
+    }
+    else
+    {
+       // LOG("\n Gain pour cette coup ","from : ", moves[0].from, "- pos : ", moves[0].pos, " eatpos", moves[0].eatPos ,"est : ",gain,"\n");
+    }
+}
+std::pair<float,float> MinMax::parcours(float& minim, float& maxim)
+{
+    if(nextMoves.empty())
+    {
+        if(gain>maxim)
+            maxim=gain;
+        if(minim>gain)
+            minim=gain;
+    }
+    else
+    {
+        for(int i=0; i<nextMoves.size();i++)
+        {
+            std::pair<float,float> a=nextMoves[i].parcours(minim,maxim);
+            if(a.first< minim)
+                minim=a.first;
+            if(a.second>maxim)
+                maxim=a.second;
+        }
+    }
+    std::pair<float,float> b(minim,maxim);
+    return(b);
+}
+std::vector<Action> MinMax::bestPlay()
+{
+    float minim=fmin, b=fmin;
+    float maxim=fmax, a=fmax;
+    int resMin=0,resMax=0;
+    for(int i=0;i<nextMoves.size();i++)
+    {
+        nextMoves[i].parcours(a,b);
+        if(a>minim)
+        {
+            minim=a;
+            resMin=i;
+        }
+        if(b>maxim)
+        {
+            maxim=b;
+            resMax=i;
+        }
+        b=fmin;
+        a=fmax;
+    }
+    if(minim==fmin)
+        return(nextMoves[resMax].moves);
+    else
+        return(nextMoves[resMin].moves);
+}
 Damier::Damier()
 {
     _boardInfo[0].width = 10;
@@ -550,8 +837,8 @@ Damier::blackKingEat(short x)
 
 void
 Damier::performMove(short i, short j)
-{/*
-    set(at(i), j);
+{
+/*    set(at(i), j);
     set(EMPTY, i);*/
     _typeTr = at(i);
     set(EMPTY, i);
@@ -696,24 +983,30 @@ Damier::getPossibleEats(Player *p)
 void
 Damier::performEatA(Action a)
 {
-    performMove(a.from, a.pos);
-    set(at(a.eatPos), EMPTY);
+    set(at(a.from), a.pos);
+    set(EMPTY, a.from) ;
+    set(EMPTY,a.eatPos );
 }
 void
 Damier::undoEat(Action a)
 {
-    performMove(a.pos,a.from)
-    set(at(a.eatPos),a.couleur)
+    set(at(a.pos), a.from);
+    set(EMPTY, a.pos) ;
+    set(a.couleur,a.eatPos);
 }
 
 void
-Damier::recursive(Player *p,std::vector<Action> retour,int n, int f,std::vector<std::vector<Action>> res)
+Damier::recursive(Player *p,std::vector<Action>& retour,int n, int f,std::vector<std::vector<Action>>& res)
 {
     std::vector<Action> eatA;
+
     std::vector<std::pair<short,short>> eat;
+
     eat=getBestPossibleEats(p);
+
     for(auto& x : eat)
     {
+
         auto c1 = toXY(x.first);
         auto c2 = toXY(x.second);
         Piece eaten;
@@ -738,18 +1031,20 @@ Damier::recursive(Player *p,std::vector<Action> retour,int n, int f,std::vector<
     {
         for(int i=0;i<eatA.size();i++)
         {
-            performEat(eatA[i]);
+            performEatA(eatA[i]);
             retour[n]=eatA[i];
-            recursive(p,retour,n+1,f)
+            recursive(p,retour,n+1,f, res);
+            undoEat(eatA[i]);
         }
     }
     else
     {
-        retour[n]=eatA[i];
-        res.push_back(retour)
+        if( n != 0)
+        {
+            //retour[n]=eatA[n];
+            res.push_back(retour);
+        }
     }
-    undoEat(eatA[eatA.size()-1]);
-
 }
 std::vector<std::vector<Action>>
 Damier::getBestEatAction(Player *p)
@@ -773,7 +1068,9 @@ Damier::getBestEatAction(Player *p)
         }
     }
     std::vector<Action> retour(maxi);
+
     recursive(p,retour,n,maxi,res);
+
     for(int i=0; i<res.size();i++)
     {
         bool tr =true;
@@ -782,7 +1079,7 @@ Damier::getBestEatAction(Player *p)
         {
             if (var!= res[i][j].from)
                 tr=false;
-            var= res[i][0].pos;
+            var= res[i][j].pos;
         }
         if(!tr)
             res.erase(res.begin()+i);
@@ -791,7 +1088,7 @@ Damier::getBestEatAction(Player *p)
 
 }
 void
-Damier::recursive1(Player *p,std::vector<Action> previous,std::vector<std::vector<Action>> res)
+Damier::recursive1(Player *p,std::vector<Action>& previous,std::vector<std::vector<Action>>& res)
 {
     std::vector<Action> eatA,newElement;
     newElement=previous;
@@ -821,22 +1118,22 @@ Damier::recursive1(Player *p,std::vector<Action> previous,std::vector<std::vecto
     }
     if(!eatA.empty())
     {
-        for(int i=0,i<eatA.size();i++)
+        int i;
+        for(i=0;i<eatA.size();i++)
         {
             newElement.push_back(eatA[i]);
             res.push_back(newElement);
             performEatA(eatA[i]);
             recursive1(p,newElement,res);
+            undoEat(eatA[i]);
         }
-        undoEat(eatA[i-1]);
     }
-}  
+}
 std::vector<std::vector<Action>>
 Damier::getAllEatAction(Player *p)
 {
     int var=0;
     std::vector<std::vector<Action>> res;
-    Piece color = p->getColor();
     std::vector<Action> previous;
     recursive1(p,previous,res);
     for(int i=0; i<res.size();i++)
@@ -847,13 +1144,12 @@ Damier::getAllEatAction(Player *p)
         {
             if (var!= res[i][j].from)
                 tr=false;
-            var= res[i][0].pos;
+            var= res[i][j].pos;
         }
         if(!tr)
             res.erase(res.begin()+i);
     }
     return(res);
-
 }
 std::vector<std::vector<Action>>
 Damier::getPossibleMovesA(Player *p) const
@@ -877,6 +1173,28 @@ Damier::getPossibleMovesA(Player *p) const
     return res;
 }
 
+std::vector<std::vector<Action>>
+Damier::getBestThing(Player* p)
+{
+    std::vector<std::vector<Action>> x;
+    if(!Settings::mustEatMaxPieces())
+    {
+        x=getAllEatAction(p);
+    }
+    else
+    {
+        x=getBestEatAction(p);
+
+    }
+
+    if(x.empty())
+    {
+        x = getPossibleMovesA(p);
+    }
+    return x;
+}
+
+/*
 std::pair<short int, short int>
 Damier::bestEatOf(short i)
 {
@@ -922,7 +1240,7 @@ Damier::bestEatOf(short i)
         set(eaten, e);
     }
 }
-
+*/
 std::vector<std::pair<short int, short int>>
 Damier::getBestPossibleEats(Player *p)
 {
@@ -934,6 +1252,7 @@ Damier::getBestPossibleEats(Player *p)
     //For every entry in the board
     for(int i = 0; i < _boardInfo[_board].boardSize; i++)
     {
+
         short x = (short)color & at(i);
         //Check if it is the right color
         if(x != 0)
@@ -974,13 +1293,13 @@ Damier::getBestPossibleEats(Player *p)
                     {
                         eats.push_back(std::make_pair(i, j));
                     }
-
                     set(at(j), i);
                     set(EMPTY, j);
                     set(eaten, e);
                 }
             }
         }
+
     }
     for(auto& ps : eats)
     {
@@ -1308,4 +1627,36 @@ void
 Damier::unhighlightAll()
 {
     _highlighted.clear();
+}
+void
+Damier::performAction(vector<Action> moves)
+{
+    for(int i=0; i<moves.size(); i++)
+    {
+        if(moves[i].eatPos==-1)
+        {
+            set(at(moves[i].from), moves[i].pos);
+            set(EMPTY, moves[i].from) ;
+        }
+        else
+        {
+            performEatA(moves[i]);
+        }
+    }
+}
+void
+Damier::undoTheAction(vector <Action> moves)
+{
+    for(int i=0; i<moves.size(); i++)
+    {
+        if(moves[moves.size()-i-1].eatPos==-1)
+        {
+            set(at(moves[moves.size()-i-1].pos), moves[moves.size()-i-1].from);
+            set(EMPTY, moves[moves.size()-i-1].pos) ;
+        }
+        else
+        {
+            undoEat(moves[moves.size()-i-1]);
+        }
+    }
 }

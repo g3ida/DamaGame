@@ -6,24 +6,8 @@
 #include "logger/Log.h"
 
 class Player;
-enum Damier::Piece;
+struct Action;
 
-struct Action
-{
-    static Action createMove(short from, short pos)
-    {
-        return Action{'-', from, pos,-1,Damier::EMPTY};
-    }
-    static Action createEat(short from, short pos, short posEat, Damier::Piece p)
-    {
-        return Action{'x', from, pos,posEat,p};
-    }
-    char type;
-    short from;
-    short pos;
-    short eatPos;
-    Damier::Piece couleur;
-};
 class Damier
 {
 public :
@@ -81,14 +65,17 @@ public :
 
     void highlight(short x);
     void unhighlightAll();
-    
-    void Damier::performEatA(Action a);
-    void Damier::undoEat(Action a);
-    std::vector<std::vector<Action>> Damier::getPossibleMovesA(Player *p) const;
-    std::vector<std::vector<Action>> Damier::getAllEatAction(Player *p);
-    void Damier::recursive1(Player *p,std::vector<Action> previous,std::vector<std::vector<Action>> res);
-    std::vector<std::vector<Action>> Damier::getBestEatAction(Player *p);
-    void Damier::recursive(Player *p,std::vector<Action> retour,int n, int f,std::vector<std::vector<Action>> res);
+
+    void undoTheAction(std::vector <Action> moves);
+    void performAction(std::vector<Action> moves);
+    void performEatA(Action a);
+    void undoEat(Action a);
+    std::vector<std::vector<Action>> getPossibleMovesA(Player *p) const;
+    std::vector<std::vector<Action>> getAllEatAction(Player *p);
+    void recursive1(Player *p,std::vector<Action>& previous,std::vector<std::vector<Action>>& res);
+    std::vector<std::vector<Action>> getBestEatAction(Player *p);
+    void recursive(Player *p,std::vector<Action>& retour,int n, int f,std::vector<std::vector<Action>>& res);
+    std::vector<std::vector<Action>> getBestThing(Player* p);
 
 private :
     std::vector<short> whiteManMove(short x) const;
@@ -137,3 +124,65 @@ private :
     Piece tab[MAX_SIZE];
 };
 
+struct Action
+{
+    static Action createMove(short from, short pos)
+    {
+        return Action{'-', from, pos,-1,Damier::EMPTY};
+    }
+    static Action createEat(short from, short pos, short posEat, Damier::Piece p)
+    {
+        return Action{'x', from, pos,posEat,p};
+    }
+    char type;
+    short from;
+    short pos;
+    short eatPos;
+    Damier::Piece couleur;
+};
+class MinMax
+{
+public :
+    std::vector<Action> moves;
+    std::vector<MinMax> nextMoves;
+    MinMax* previousMove;
+    float calculGain(Damier &d,Player* p,int playNumber);
+    float gain=0;
+    MinMax(Damier& d,Player* p,int playNumber,MinMax* prev, int gain1, std::vector<Action> m ,int playerNumber)
+    {
+        for(int i=0; i<m.size(); i++)
+        {
+            moves.push_back(m[i]);
+            //LOG("moves :",m[i].from," x ",m[i].eatPos," --- ",m[i].pos);
+        }
+        d.performAction(m);
+        if(playerNumber== 1)
+            gain=gain1+calculGain(d,p,playNumber);
+        else
+            gain=gain1-calculGain(d,p,playNumber);
+        //LOG("MinMax d addresse: ",this," prev: ",prev," Gain: ", gain , "\n");
+        previousMove=prev;
+    }
+    /*MinMax(const MinMax &a)
+    {
+        for(int i=0; i<a.moves.size(); i++)
+        {
+            moves.push_back(a.moves[i]);
+        }
+        previousMove=a.previousMove;
+        gain=a.gain;
+    }
+    void MakeNextMoves(Damier& d,Player* p,int playNumber)
+    {
+        std::vector<std::vector<Action>> v=d.getBestThing(p);
+        for(int i=0;i<v.size();i++)
+        {
+            MinMax a(d,p,playNumber,this,gain,v[i]);
+            nextMoves.push_back(a);
+        }
+    }*/
+    void makeTree (Damier &d, int k, Player* player1 ,Player* player2 ,int playNumber,int playerNumber);
+    std::pair<float,float> parcours(float& minim, float& maxim);
+    std::vector<Action> bestPlay();
+
+};
