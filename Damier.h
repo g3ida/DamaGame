@@ -157,9 +157,9 @@ public :
         }
         d.performAction(m);
         if(playerNumber== 1)
-            gain=gain1+calculGain(d,p,playNumber);
+            gain=calculGain(d,p,playNumber);
         else
-            gain=gain1-calculGain(d,p,playNumber);
+            gain=-calculGain(d,p,playNumber);
         //LOG("MinMax d addresse: ",this," prev: ",prev," Gain: ", gain , "\n");
         previousMove=prev;
     }
@@ -181,7 +181,7 @@ public :
             nextMoves.push_back(a);
         }
     }*/
-    void makeTree (Damier &d, int k, Player* player1 ,Player* player2 ,int playNumber,int playerNumber);
+    void makeTree (Damier &d, int k,int initial, Player* player1 ,Player* player2 ,int playNumber,int playerNumber,std::vector<Action> &result);
     std::pair<float,float> parcours(float& minim, float& maxim);
     std::vector<Action> bestPlay();
 

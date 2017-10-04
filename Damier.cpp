@@ -11,8 +11,8 @@
 #include <limits>
 #include <iostream>
 using namespace std;
-int const N= 500;//52.8903;
-int const K= 1000;//110;
+int const N= 52.8903;
+int const K= 160;
 int const S= 5.0709;
 int const T= 5.1219;
 int const A= 5.1419;
@@ -78,8 +78,8 @@ float MinMax::calculGain(Damier &d,Player* p,int playNumber)
     int nbBlck=nbBlack(d);
     int nbWhte=nbWhite(d);
     /*if(moves.empty())
-        return(-fmax)
-    else;*/
+        return(-fmax);
+    else*/
     {
         if(((nbWhite(d)==0) && (color==Damier::Piece::BLACK)) || ((nbBlack(d)==0) && (color==Damier::Piece::WHITE)))
             return(fmax);
@@ -103,30 +103,44 @@ float MinMax::calculGain(Damier &d,Player* p,int playNumber)
                 }
             }
         }
+        if(((moves[i].pos)>19)&&((moves[i].pos)<30))
+        {
+            if(color==Damier::WHITE)
+                Gain+=S*(nbWhte+nbBlck);
+            else
+                Gain-=S*(nbWhte+nbBlck);
+        }
    }
    for(int i=0;i<50;i++)
    {
-         if(d.at(i)==Damier::WHITE)
-            Gain+=N;
+         /*if(d.at(i)==Damier::WHITE)
+            Gain+=N;*/
          if(d.at(i)==Damier::WHITE_KING)
                 Gain+=K;
-         if(d.at(i)==Damier::BLACK)
-            Gain-=N;
+         /*if(d.at(i)==Damier::BLACK)
+            Gain-=N;*/
          if(d.at(i)==Damier::BLACK_KING)
             Gain-=K;
 
    }
-   for(int l=20; l<30; l++)
+   for(int l=0; l<30; l++)
     {
         if(d.at(l)==Damier::WHITE)
             Gain+=S*(nbWhte+nbBlck);
         if(d.at(l)==Damier::WHITE_KING)
             Gain+=S*(nbWhte+nbBlck);
+    }
+    for(int l=20; l<50; l++)
+    {
         if(d.at(l)==Damier::BLACK)
             Gain-=S*(nbWhte+nbBlck);
         if(d.at(l)==Damier::BLACK_KING)
             Gain-=S*(nbWhte+nbBlck);
     }
+
+
+    std::vector<std::vector<Action>> v=d.getBestThing(p);
+    Gain+=v.size();
     /*for(int l=0;l<5;l++)
     {
         if(d.at(l)==Damier::BLACK)
@@ -147,74 +161,9 @@ float MinMax::calculGain(Damier &d,Player* p,int playNumber)
         Gain= -Gain;
     return(Gain);
 }
-/*float calGain(Damier &d,int playNumber,std::vector<Action> moves)
-{
-    float Gain =0;
-    int nbBlck=nbBlack(d);
-    int nbWhte=nbWhite(d);
-   for(int i=0;i<moves.size();i++)
-   {
-        if(moves[i].type=='x')
-        {
-            if((moves[i].couleur)==Damier::WHITE)
-                Gain-=N*nbBlck;
-            else
-            {
-                if((moves[i].couleur)==Damier::WHITE_KING)
-                    Gain-=K*nbBlck;
-                else
-                {
-                    if((moves[i].couleur)==Damier::BLACK)
-                        Gain+=N*nbWhte;
-                    else
-                        Gain+=K*nbWhte;
-                }
-            }
-        }
-   }
-   for(int i=0;i<50;i++)
-   {
-         if(d.at(i)==Damier::WHITE)
-            Gain+=N;
-         if(d.at(i)==Damier::WHITE_KING)
-                Gain+=K;
-         if(d.at(i)==Damier::BLACK)
-            Gain-=N;
-         if(d.at(i)==Damier::BLACK_KING)
-            Gain-=K;
 
-   }
-   for(int l=20; l<30; l++)
-    {
-        if(d.at(l)==Damier::WHITE)
-            Gain+=S*(nbWhte+nbBlck);
-        if(d.at(l)==Damier::WHITE_KING)
-            Gain+=S*(nbWhte+nbBlck);
-        if(d.at(l)==Damier::BLACK)
-            Gain-=S*(nbWhte+nbBlck);
-        if(d.at(l)==Damier::BLACK_KING)
-            Gain-=S*(nbWhte+nbBlck);
-    }
-    /*for(int l=0;l<5;l++)
-    {
-        if(d.at(l)==Damier::BLACK)
-                Gain-=T/playNumber;
-        if(d.at(l)==Damier::BLACK_KING)
-                Gain-=T/playNumber;
-    }
-    for(int l=45; l<50;l++)
-    {
-        if(d.at(l)==Damier::WHITE)
-            Gain+=T/playNumber;
-        if(d.at(l)==Damier::WHITE_KING)
-            Gain+=T/playNumber;
-    }
-    Gain+= (AttachedPieces(d).first)*A;
-    Gain-= (AttachedPieces(d).second)*A;
-    return(Gain);
-}*/
 void
-MinMax::makeTree (Damier &d, int k, Player* player1 ,Player* player2,int playNumber,int playerNumber)
+MinMax::makeTree (Damier &d, int k,int initial, Player* player1 ,Player* player2,int playNumber,int playerNumber,vector<Action> &result)
 {
     if(k!=0)
     {
@@ -223,26 +172,77 @@ MinMax::makeTree (Damier &d, int k, Player* player1 ,Player* player2,int playNum
 
         }
         else*/
+        std::vector<std::vector<Action>> v=d.getBestThing(player1);
+        /*if(k==2)
+        {
+            //cout<<"\n Gain pour cette coup niveau 1 from : "<< moves[0].from<< "- pos : "<< moves[0].pos<< " eatpos"<< moves[0].eatPos <<"est : "<<gain<<"\n";
+        }
         if(k==1)
         {
-            LOG("First move of this set is :from : ", moves[0].from, "- pos : ", moves[0].pos, " eatpos", moves[0].eatPos ,"est : ",gain,"\n");
-        }
-        {
-        std::vector<std::vector<Action>> v=d.getBestThing(player1);
+            //cout<<"\n     Gain pour cette coup niveau 2 from : "<< moves[0].from<< "- pos : "<< moves[0].pos<< " eatpos"<< moves[0].eatPos <<"est : "<<gain<<"\n";
+        }*/
         for(int i=0;i<v.size();i++)
         {
             MinMax a(d,player1,playNumber,this,gain,v[i],playerNumber);
             nextMoves.push_back(a);
-            nextMoves[i].makeTree(d,k-1,player2,player1, playNumber+1,(playerNumber%2)+1);
+            nextMoves[i].makeTree(d,k-1,initial,player2,player1, playNumber+1,(playerNumber%2)+1,result);
+            //if(k!=initial)
+            //LOG("\n Gain pour cette coup ","from : ", moves[0].from, "- pos : ", moves[0].pos, " eatpos", moves[0].eatPos ,"est : ",gain,"\n");
+
             //cout<<" Gain: "<<gain <<"\n";
                 d.undoTheAction(v[i]);
-            }
+        }
 
+
+        if(k==initial)
+        {
+            float maxgain=fmin;
+            for(int i=0;i<nextMoves.size();i++)
+            {
+                if(nextMoves[i].gain>maxgain)
+                {
+                    maxgain=nextMoves[i].gain;
+                    result=nextMoves[i].moves;
+                }
+                //cout<< "\n maxgain = "<<maxgain;
+            }
+            if(maxgain==fmin)
+            {
+                result=bestPlay();
+            }
+            //for(auto& y:result)
+                //LOG("from : ", y.from, "- pos : ", y.pos, " eatpos", y.eatPos, " eaten ", y.couleur ,"\n");
+        }
+        else
+        {
+            if(playerNumber==1)
+            {
+
+                float maxgain=fmin;
+                for(int i=0;i<nextMoves.size();i++)
+                {
+                    if(nextMoves[i].gain>maxgain)
+                    {
+                        maxgain=nextMoves[i].gain;
+                    }
+                }
+                gain+=maxgain;
+            }
+            if(playerNumber==2)
+            {
+                float mingain=fmax;
+                for(int i=0;i<nextMoves.size();i++)
+                {
+                    if(nextMoves[i].gain<mingain)
+                    mingain=nextMoves[i].gain;
+                }
+                gain+=mingain;
+            }
         }
     }
     else
     {
-       // LOG("\n Gain pour cette coup ","from : ", moves[0].from, "- pos : ", moves[0].pos, " eatpos", moves[0].eatPos ,"est : ",gain,"\n");
+        //cout<<"\n         Gain pour cette coup niveau 3 from : "<< moves[0].from<< "- pos : "<< moves[0].pos<< " eatpos"<< moves[0].eatPos <<"est : "<<gain<<"\n";
     }
 }
 std::pair<float,float> MinMax::parcours(float& minim, float& maxim)
@@ -636,10 +636,10 @@ std::vector<short>
 Damier::whiteKingEat(short x)
 {
     std::vector<short> v;
-    LOG("IS FLYING ? \n");
+    //LOG("IS FLYING ? \n");
     if(!_flyingKing)
     {
-        LOG("yess \n");
+        //LOG("yess \n");
         auto tmp = _eatBackward;
         _eatBackward = true;
         v = whiteManEat(x);
@@ -1301,10 +1301,10 @@ Damier::getBestPossibleEats(Player *p)
         }
 
     }
-    for(auto& ps : eats)
+    /*for(auto& ps : eats)
     {
         LOG(ps.first, " --- ", ps.second, "\n");
-    }
+    }*/
 
     return eats;
 }
