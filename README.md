@@ -1,4 +1,4 @@
-# DamaGame
+# DamaGame v 0.1.0
 a draughts game created by Mohamed Alaa Gaida and Mohamed Mounir Moussa.
 
 ## compilation
